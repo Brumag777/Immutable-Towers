@@ -6,7 +6,6 @@
 Module      : Tarefa2
 Description : Auxiliares do Jogo
 Copyright   : Bruno Miguel Silva Magalhães <a110274@alunos.uminho.pt>
-              João Luís Dias da Costa Oliveira <a81116@alunos.uminho.pt>
 
 
 Módulo para a realização da Tarefa 2 de LI1 em 2024/25.

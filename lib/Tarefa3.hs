@@ -8,7 +8,6 @@
 Module      : Tarefa3
 Description : Mecânica do Jogo
 Copyright   : Bruno Miguel Silva Magalhães <a110274@alunos.uminho.pt>
-              João Luís Dias da Costa Oliveira <a81116@alunos.uminho.pt>
 
 
 Módulo para a realização da Tarefa 3 de LI1 em 2024/25.
