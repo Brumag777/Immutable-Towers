@@ -100,7 +100,7 @@ desenha imagemBackgroundNatural imagemBackgroundFlamejante imagemBackgroundCrist
                                                                              "O objetivo principal do jogo e contruir torres para evitar",
                                                                              "que os inimigos alcancem a base. Para tal, o jogador deve",
                                                                              "investir ouro para comprar torres que atacam os inimigos",
-                                                                             "de modo a derrota-los antes que estes chegue a base.",
+                                                                             "de modo a derrota-los antes que estes cheguem a base.",
                                                                              "",
                                                                              "")
                                                             | n == 2 = (-160,"O Terreno",
@@ -155,7 +155,7 @@ desenha imagemBackgroundNatural imagemBackgroundFlamejante imagemBackgroundCrist
                                                             | n == 9 = (-324,"Projetil de Fraqueza",
                                                                              "Inimigos afetados pelo efeito de fraqueza levam o dobro do",
                                                                              "dano direto das torres (nao afetando o fogo). Este efeito e",
-                                                                             "essencial para lidar com inimigos de com uma elevada",
+                                                                             "essencial para lidar com inimigos com uma elevada",
                                                                              "quantidade de vida.",
                                                                              "",
                                                                              "")
