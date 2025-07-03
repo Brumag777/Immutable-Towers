@@ -1,4 +1,4 @@
-# 🇵🇹 **Português**
+# PT **Português**
 
 ## 🏰 Immutable Towers
 
@@ -37,7 +37,7 @@ Para ver a documentação do projeto, realizada com a biblioteca Haddock, utiliz
 cabal haddock
 ```
 
-# 🇺🇸 **English**
+# US **English**
 
 ## 🏰 Immutable Towers
 
