@@ -1,0 +1,837 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+<span class="lineno">    2 </span>{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+<span class="lineno">    3 </span>{-# HLINT ignore &quot;Use any&quot; #-}
+<span class="lineno">    4 </span>{-# OPTIONS_GHC -Wno-type-defaults #-}
+<span class="lineno">    5 </span>{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+<span class="lineno">    6 </span>{-# HLINT ignore &quot;Use uncurry&quot; #-}
+<span class="lineno">    7 </span>{-|
+<span class="lineno">    8 </span>Module      : Tarefa3
+<span class="lineno">    9 </span>Description : Mecânica do Jogo
+<span class="lineno">   10 </span>Copyright   : Bruno Miguel Silva Magalhães &lt;a110274@alunos.uminho.pt&gt;
+<span class="lineno">   11 </span>              João Luís Dias da Costa Oliveira &lt;a81116@alunos.uminho.pt&gt;
+<span class="lineno">   12 </span>
+<span class="lineno">   13 </span>
+<span class="lineno">   14 </span>Módulo para a realização da Tarefa 3 de LI1 em 2024/25.
+<span class="lineno">   15 </span>-}
+<span class="lineno">   16 </span>module Tarefa3 where
+<span class="lineno">   17 </span>
+<span class="lineno">   18 </span>import LI12425
+<span class="lineno">   19 </span>import Tarefa2
+<span class="lineno">   20 </span>import Tarefa1
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>-- | A função 'atualizaJogo' é responsável por atualizar tudo o que ocorre durante um jogo automaticamente, tal como o movimentos dos inimigos e os ataques das torres.
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>atualizaJogo ::
+<span class="lineno">   25 </span> -- | Tempo a atualizar.
+<span class="lineno">   26 </span> Tempo -&gt;
+<span class="lineno">   27 </span> -- | Tempo de jogo.
+<span class="lineno">   28 </span> Tempo -&gt;
+<span class="lineno">   29 </span> -- | Jogo pré-atualização.
+<span class="lineno">   30 </span> Jogo -&gt;
+<span class="lineno">   31 </span> -- | Jogo atualizado.
+<span class="lineno">   32 </span> Jogo
+<span class="lineno">   33 </span><span class="decl"><span class="nottickedoff">atualizaJogo t tj jogo = Jogo baseAtualizada portaisAtualizados torresAtualizadas mapa </span>
+<span class="lineno">   34 </span><span class="spaces">                              </span><span class="nottickedoff">(atualizaEfeitosChuva (atualizaVidaInimigosLagrimasCristalinas lagrimasCristalinas inimigosAtualizados' t ec) numero b t) </span>
+<span class="lineno">   35 </span><span class="spaces">                              </span><span class="nottickedoff">loja numero posicaoTec q' ec' td'</span>
+<span class="lineno">   36 </span><span class="spaces">                                </span><span class="nottickedoff">where torres = torresJogo jogo</span>
+<span class="lineno">   37 </span><span class="spaces">                                      </span><span class="nottickedoff">portais = portaisJogo jogo</span>
+<span class="lineno">   38 </span><span class="spaces">                                      </span><span class="nottickedoff">mapa = mapaJogo jogo</span>
+<span class="lineno">   39 </span><span class="spaces">                                      </span><span class="nottickedoff">inimigos = inimigosJogo jogo</span>
+<span class="lineno">   40 </span><span class="spaces">                                      </span><span class="nottickedoff">base = baseJogo jogo</span>
+<span class="lineno">   41 </span><span class="spaces">                                      </span><span class="nottickedoff">loja = lojaJogo jogo</span>
+<span class="lineno">   42 </span><span class="spaces">                                      </span><span class="nottickedoff">numero = numeroNivel jogo</span>
+<span class="lineno">   43 </span><span class="spaces">                                      </span><span class="nottickedoff">posicaoTec = posicaoTeclado jogo</span>
+<span class="lineno">   44 </span><span class="spaces">                                      </span><span class="nottickedoff">q = inimigosDerrotados jogo</span>
+<span class="lineno">   45 </span><span class="spaces">                                      </span><span class="nottickedoff">ec = estadoChuva jogo</span>
+<span class="lineno">   46 </span><span class="spaces">                                      </span><span class="nottickedoff">(b,_,_) = ec</span>
+<span class="lineno">   47 </span><span class="spaces">                                      </span><span class="nottickedoff">td = tempoDia jogo</span>
+<span class="lineno">   48 </span><span class="spaces">                                      </span><span class="nottickedoff">ec' = atualizaGotasChuva ec (tj * 60) t</span>
+<span class="lineno">   49 </span><span class="spaces">                                      </span><span class="nottickedoff">(portaisAtualizados,todosInimigos) = atualizaPortais portais t inimigos</span>
+<span class="lineno">   50 </span><span class="spaces">                                      </span><span class="nottickedoff">(torresAtualizadas,inimigosAtualizados) = atualizaTorres torres todosInimigos t td tj</span>
+<span class="lineno">   51 </span><span class="spaces">                                      </span><span class="nottickedoff">(baseAtualizada,inimigosAtualizados',q') = atualizaInimigos inimigosAtualizados mapa base t td q b</span>
+<span class="lineno">   52 </span><span class="spaces">                                      </span><span class="nottickedoff">lagrimasCristalinas = filtraPosicoesLagrimasCristalinas mapa (0,0)</span>
+<span class="lineno">   53 </span><span class="spaces">                                      </span><span class="nottickedoff">td' = atualizaTempoDia td t</span></span>
+<span class="lineno">   54 </span>
+<span class="lineno">   55 </span>-- | 'mapa01' é um exemplo de um mapa.
+<span class="lineno">   56 </span>
+<span class="lineno">   57 </span>mapa01 :: Mapa
+<span class="lineno">   58 </span><span class="decl"><span class="istickedoff">mapa01 = [[t, t, r, a, t, a],</span>
+<span class="lineno">   59 </span><span class="spaces">          </span><span class="istickedoff">[r, t, r, a, t, r],</span>
+<span class="lineno">   60 </span><span class="spaces">          </span><span class="istickedoff">[r, t, r, a, a, t],</span>
+<span class="lineno">   61 </span><span class="spaces">          </span><span class="istickedoff">[r, t, t, a, r, t],</span>
+<span class="lineno">   62 </span><span class="spaces">          </span><span class="istickedoff">[r, t, t, t, t, t],</span>
+<span class="lineno">   63 </span><span class="spaces">          </span><span class="istickedoff">[a, a, a, a, r, r]]</span>
+<span class="lineno">   64 </span><span class="spaces">            </span><span class="istickedoff">where t = Terra</span>
+<span class="lineno">   65 </span><span class="spaces">                  </span><span class="istickedoff">r = Relva</span>
+<span class="lineno">   66 </span><span class="spaces">                  </span><span class="istickedoff">a = Agua</span></span>
+<span class="lineno">   67 </span>-- | 'mapaX' é um exemplo de um mapa.
+<span class="lineno">   68 </span>
+<span class="lineno">   69 </span>mapaX :: Mapa
+<span class="lineno">   70 </span><span class="decl"><span class="istickedoff">mapaX = [[t, t, t],</span>
+<span class="lineno">   71 </span><span class="spaces">         </span><span class="istickedoff">[t, t, t],</span>
+<span class="lineno">   72 </span><span class="spaces">         </span><span class="istickedoff">[t, t, t]]</span>
+<span class="lineno">   73 </span><span class="spaces">            </span><span class="istickedoff">where t = Terra</span></span>
+<span class="lineno">   74 </span>
+<span class="lineno">   75 </span>-- | 'mapaY' é um exemplo de um mapa.
+<span class="lineno">   76 </span>
+<span class="lineno">   77 </span>mapaY :: Mapa
+<span class="lineno">   78 </span><span class="decl"><span class="istickedoff">mapaY = [[t, t, l],</span>
+<span class="lineno">   79 </span><span class="spaces">         </span><span class="istickedoff">[t, l, l],</span>
+<span class="lineno">   80 </span><span class="spaces">         </span><span class="istickedoff">[t, t, t]]</span>
+<span class="lineno">   81 </span><span class="spaces">            </span><span class="istickedoff">where t = Terra</span>
+<span class="lineno">   82 </span><span class="spaces">                  </span><span class="istickedoff">l = LagrimasCristalinas</span></span>
+<span class="lineno">   83 </span>
+<span class="lineno">   84 </span>
+<span class="lineno">   85 </span>
+<span class="lineno">   86 </span>
+<span class="lineno">   87 </span>
+<span class="lineno">   88 </span>-- {- Funções Auxiliares -} --
+<span class="lineno">   89 </span>
+<span class="lineno">   90 </span>-- | A função 'atualizaEfeitosChuva' atualiza os inimigos com base nos efeitos da chuva.
+<span class="lineno">   91 </span>--
+<span class="lineno">   92 </span>-- == Exemplos
+<span class="lineno">   93 </span>--
+<span class="lineno">   94 </span>-- &gt;&gt;&gt; atualizaEfeitosChuva [Inimigo (4,4) Norte 40 40 40 40 [Projetil Fogo Infinita] [] 1 1] 1 False 5
+<span class="lineno">   95 </span>-- [Inimigo (4,4) Norte 40 40 40 40 [Projetil Fogo Infinita] [] 1 1]
+<span class="lineno">   96 </span>--
+<span class="lineno">   97 </span>-- &gt;&gt;&gt; atualizaEfeitosChuva [Inimigo (4,4) Norte 40 40 40 40 [Projetil Fogo Infinita] [] 1 1] 1 True 5
+<span class="lineno">   98 </span>-- [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1]
+<span class="lineno">   99 </span>--
+<span class="lineno">  100 </span>-- &gt;&gt;&gt; atualizaEfeitosChuva [Inimigo (4,4) Norte 40 40 40 40 [Projetil Fogo Infinita] [] 1 1] 2 True 5
+<span class="lineno">  101 </span>-- [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1]
+<span class="lineno">  102 </span>--
+<span class="lineno">  103 </span>-- &gt;&gt;&gt; atualizaEfeitosChuva [Inimigo (4,4) Norte 40 40 40 40 [] [Fogo] 1 1,Inimigo (4,4) Norte 40 40 40 40 [Projetil Gelo Infinita] [] 1 1,Inimigo (4,4) Norte 40 40 40 40 [Projetil Resina Infinita] [] 1 1] 3 True 5
+<span class="lineno">  104 </span>-- [Inimigo (4,4) Norte 40 40 40 40 [] [Fogo] 1 1,Inimigo (4,4) Norte 40 40 40 40 [Projetil Fogo (Finita 5)] [] 1 1,Inimigo (4,4) Norte 40 40 40 40 [Projetil Fogo (Finita 5)] [] 1 1]
+<span class="lineno">  105 </span>--
+<span class="lineno">  106 </span>-- &gt;&gt;&gt; atualizaEfeitosChuva [Inimigo (4,4) Norte 30 40 40 40 [] [] 100 1,Inimigo (4,4) Norte 90 40 40 40 [] [] 100 1] 4 True 5
+<span class="lineno">  107 </span>-- [Inimigo (4,4) Norte 80 40 40 40 [] [] 100 1,Inimigo (4,4) Norte 100 40 40 40 [] [] 100 1]
+<span class="lineno">  108 </span>
+<span class="lineno">  109 </span>atualizaEfeitosChuva :: 
+<span class="lineno">  110 </span> -- | Inimigos pré-atualização.
+<span class="lineno">  111 </span> [Inimigo] -&gt; 
+<span class="lineno">  112 </span> -- | Número do nível do jogo.
+<span class="lineno">  113 </span> Int -&gt; 
+<span class="lineno">  114 </span> -- | Se a chuva está ou não ativa.
+<span class="lineno">  115 </span> Bool -&gt; 
+<span class="lineno">  116 </span> -- | Tempo a atualizar.
+<span class="lineno">  117 </span> Tempo -&gt;
+<span class="lineno">  118 </span> -- | Inimigos pós-atualização.
+<span class="lineno">  119 </span> [Inimigo]
+<span class="lineno">  120 </span><span class="decl"><span class="istickedoff">atualizaEfeitosChuva is n b t</span>
+<span class="lineno">  121 </span><span class="spaces">    </span><span class="istickedoff">| not b = is</span>
+<span class="lineno">  122 </span><span class="spaces">    </span><span class="istickedoff">| n == 3 || n == 7 = map (adicionaProjetilFogo t . removeProjetilResina. removeProjetilGelo) is</span>
+<span class="lineno">  123 </span><span class="spaces">    </span><span class="istickedoff">| n == 4 || n == 8 = map (regeneraInimigoChuvaLagrimasCristalinas t) is</span>
+<span class="lineno">  124 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = map removeProjetilFogo is</span></span>
+<span class="lineno">  125 </span>
+<span class="lineno">  126 </span>-- | A função 'regeneraInimigoChuvaLagrimasCristalinas' regenera os inimigos quando está a chover lágrimas cristalinas.
+<span class="lineno">  127 </span>--
+<span class="lineno">  128 </span>-- == Exemplos
+<span class="lineno">  129 </span>--
+<span class="lineno">  130 </span>-- &gt;&gt;&gt; regeneraInimigoChuvaLagrimasCristalinas 5 (Inimigo (4,4) Norte 30 40 40 40 [] [] 100 1)
+<span class="lineno">  131 </span>-- Inimigo (4,4) Norte 80 40 40 40 [] [] 100 1
+<span class="lineno">  132 </span>--
+<span class="lineno">  133 </span>-- &gt;&gt;&gt; regeneraInimigoChuvaLagrimasCristalinas 5 (Inimigo (4,4) Norte 90 40 40 40 [] [] 100 1)
+<span class="lineno">  134 </span>-- Inimigo (4,4) Norte 100 40 40 40 [] [] 100 1
+<span class="lineno">  135 </span>--
+<span class="lineno">  136 </span>-- &gt;&gt;&gt; regeneraInimigoChuvaLagrimasCristalinas 5 (Inimigo (4,4) Norte 100 40 40 40 [] [] 100 1)
+<span class="lineno">  137 </span>-- Inimigo (4,4) Norte 100 40 40 40 [] [] 100 1
+<span class="lineno">  138 </span>
+<span class="lineno">  139 </span>regeneraInimigoChuvaLagrimasCristalinas :: Tempo -&gt; Inimigo -&gt; Inimigo
+<span class="lineno">  140 </span><span class="decl"><span class="istickedoff">regeneraInimigoChuvaLagrimasCristalinas t i = Inimigo pos dir (min (vida + 10 * t) vMax) velocidade ataque butim ps imunidades vMax n</span>
+<span class="lineno">  141 </span><span class="spaces">    </span><span class="istickedoff">where Inimigo pos dir vida velocidade ataque butim ps imunidades vMax n = i</span></span>
+<span class="lineno">  142 </span>
+<span class="lineno">  143 </span>-- | A função 'filtraPosicoesLagrimasCristalinas' determina as coordenadas de pontos correnpondentes apenas ao terreno de 'LagrimasCristalinas' de um mapa.
+<span class="lineno">  144 </span>--
+<span class="lineno">  145 </span>-- == Exemplos
+<span class="lineno">  146 </span>--
+<span class="lineno">  147 </span>-- &gt;&gt;&gt; filtraPosicoesLagrimasCristalinas mapaX (0,0)
+<span class="lineno">  148 </span>-- []
+<span class="lineno">  149 </span>--
+<span class="lineno">  150 </span>-- &gt;&gt;&gt; filtraPosicoesLagrimasCristalinas mapaY (0,0)
+<span class="lineno">  151 </span>-- [(2,0),(1,1),(2,1)]
+<span class="lineno">  152 </span>
+<span class="lineno">  153 </span>filtraPosicoesLagrimasCristalinas :: 
+<span class="lineno">  154 </span> -- | Mapa do jogo.
+<span class="lineno">  155 </span> Mapa -&gt;
+<span class="lineno">  156 </span> -- | Posição do ponto na matriz (deve ser (0,0) inicialmente para determinar corretamente as coordenadas).
+<span class="lineno">  157 </span> Posicao -&gt;
+<span class="lineno">  158 </span> -- | Posições correpondentes ao terreno de 'LagrimasCristalinas'.
+<span class="lineno">  159 </span> [Posicao]
+<span class="lineno">  160 </span><span class="decl"><span class="istickedoff">filtraPosicoesLagrimasCristalinas [] _ = []</span>
+<span class="lineno">  161 </span><span class="spaces"></span><span class="istickedoff">filtraPosicoesLagrimasCristalinas (l:ls) (x,y) = filtraPosicoesLagrimasCristalinasAux l (0,y) ++ filtraPosicoesLagrimasCristalinas ls (<span class="nottickedoff">x</span>,y + 1)</span>
+<span class="lineno">  162 </span><span class="spaces">    </span><span class="istickedoff">where filtraPosicoesLagrimasCristalinasAux [] _ = []</span>
+<span class="lineno">  163 </span><span class="spaces">          </span><span class="istickedoff">filtraPosicoesLagrimasCristalinasAux (c:cs) (a,b)</span>
+<span class="lineno">  164 </span><span class="spaces">            </span><span class="istickedoff">| c == LagrimasCristalinas = (a,b) : filtraPosicoesLagrimasCristalinasAux cs (a + 1,b)</span>
+<span class="lineno">  165 </span><span class="spaces">            </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = filtraPosicoesLagrimasCristalinasAux cs (a + 1,b)</span></span>
+<span class="lineno">  166 </span>
+<span class="lineno">  167 </span>-- | A função 'verifGelo' verifica se um projétil é do tipo Gelo.
+<span class="lineno">  168 </span>--
+<span class="lineno">  169 </span>-- == Exemplos
+<span class="lineno">  170 </span>--
+<span class="lineno">  171 </span>-- &gt;&gt;&gt; verifGelo (Projetil Gelo Infinita)
+<span class="lineno">  172 </span>-- True
+<span class="lineno">  173 </span>--
+<span class="lineno">  174 </span>-- &gt;&gt;&gt; verifFogo (Projetil Resina Infinita)
+<span class="lineno">  175 </span>-- False
+<span class="lineno">  176 </span>
+<span class="lineno">  177 </span>verifGelo ::
+<span class="lineno">  178 </span> -- | Projétil recebido.
+<span class="lineno">  179 </span> Projetil -&gt;
+<span class="lineno">  180 </span> -- | Resultado no tipo 'True' caso o projétil seja de Gelo ou 'False' caso contrário.
+<span class="lineno">  181 </span> Bool
+<span class="lineno">  182 </span><span class="decl"><span class="istickedoff">verifGelo (Projetil Gelo _) = True</span>
+<span class="lineno">  183 </span><span class="spaces"></span><span class="istickedoff">verifGelo _ = False</span></span>
+<span class="lineno">  184 </span>
+<span class="lineno">  185 </span>-- | A função 'verifFogo' verifica se um projétil é do tipo Fogo.
+<span class="lineno">  186 </span>--
+<span class="lineno">  187 </span>-- == Exemplos
+<span class="lineno">  188 </span>--
+<span class="lineno">  189 </span>-- &gt;&gt;&gt; verifFogo (Projetil Fogo Infinita)
+<span class="lineno">  190 </span>-- True
+<span class="lineno">  191 </span>--
+<span class="lineno">  192 </span>-- &gt;&gt;&gt; verifFogo (Projetil Resina Infinita)
+<span class="lineno">  193 </span>-- True
+<span class="lineno">  194 </span>
+<span class="lineno">  195 </span>verifFogo ::
+<span class="lineno">  196 </span> -- | Projétil recebido.
+<span class="lineno">  197 </span> Projetil -&gt;
+<span class="lineno">  198 </span> -- | Resultado no tipo 'True' caso o projétil seja de Fogo ou 'False' caso contrário.
+<span class="lineno">  199 </span> Bool
+<span class="lineno">  200 </span><span class="decl"><span class="istickedoff">verifFogo (Projetil Fogo _) = True</span>
+<span class="lineno">  201 </span><span class="spaces"></span><span class="istickedoff">verifFogo _ = False</span></span>
+<span class="lineno">  202 </span>
+<span class="lineno">  203 </span>-- | A função 'verifResina' verifica se um projétil é do tipo Resina.
+<span class="lineno">  204 </span>--
+<span class="lineno">  205 </span>-- == Exemplos
+<span class="lineno">  206 </span>--
+<span class="lineno">  207 </span>-- &gt;&gt;&gt; verifResina (Projetil Resina Infinita)
+<span class="lineno">  208 </span>-- True
+<span class="lineno">  209 </span>--
+<span class="lineno">  210 </span>-- &gt;&gt;&gt; verifResina (Projetil Fraqueza Infinita)
+<span class="lineno">  211 </span>-- False
+<span class="lineno">  212 </span>
+<span class="lineno">  213 </span>verifResina ::
+<span class="lineno">  214 </span> -- | Projétil recebido.
+<span class="lineno">  215 </span> Projetil -&gt;
+<span class="lineno">  216 </span> -- | Resultado no tipo 'True' caso o projétil seja de Resina ou 'False' caso contrário.
+<span class="lineno">  217 </span> Bool
+<span class="lineno">  218 </span><span class="decl"><span class="istickedoff">verifResina (Projetil Resina _) = True</span>
+<span class="lineno">  219 </span><span class="spaces"></span><span class="istickedoff">verifResina _ = False</span></span>
+<span class="lineno">  220 </span>
+<span class="lineno">  221 </span>-- | A função 'inimigoNaoEstaNoAlcance' verifica se um inimigo não está no alcance de uma torre.
+<span class="lineno">  222 </span>--
+<span class="lineno">  223 </span>-- == Exemplos
+<span class="lineno">  224 </span>--
+<span class="lineno">  225 </span>-- &gt;&gt;&gt; inimigoNaoEstaNoAlcance (Torre (4,4) 5 4 5 5 5 (Projetil Fogo Infinita) 1 1) (Inimigo (5,4) Norte 50 50 50 50 [] [] 50 1)
+<span class="lineno">  226 </span>-- False
+<span class="lineno">  227 </span>--
+<span class="lineno">  228 </span>-- &gt;&gt;&gt; inimigoNaoEstaNoAlcance (Torre (4,4) 5 4 5 5 5 (Projetil Fogo Infinita) 1 1) (Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1)
+<span class="lineno">  229 </span>-- False
+<span class="lineno">  230 </span>--
+<span class="lineno">  231 </span>-- &gt;&gt;&gt; inimigoNaoEstaNoAlcance (Torre (4,4) 5 4 5 5 5 (Projetil Fogo Infinita) 1 1) (Inimigo (9,4) Norte 50 50 50 50 [] [] 50 1)
+<span class="lineno">  232 </span>-- True
+<span class="lineno">  233 </span>--
+<span class="lineno">  234 </span>-- &gt;&gt;&gt; inimigoNaoEstaNoAlcance (Torre (4,4) 5 4 5 5 5 (Projetil Fogo Infinita) 1 1) (Inimigo (8,8) Norte 50 50 50 50 [] [] 50 1)
+<span class="lineno">  235 </span>-- True
+<span class="lineno">  236 </span>
+<span class="lineno">  237 </span>inimigoNaoEstaNoAlcance ::
+<span class="lineno">  238 </span> -- | Torre de escolha. 
+<span class="lineno">  239 </span> Torre -&gt;
+<span class="lineno">  240 </span> -- | Inimigo de escoha.
+<span class="lineno">  241 </span> Inimigo -&gt;
+<span class="lineno">  242 </span> -- | Resultado na forma 'True' caso o inimigo não esteja no alcance da torre ou 'False' caso contrário.
+<span class="lineno">  243 </span> Bool
+<span class="lineno">  244 </span><span class="decl"><span class="istickedoff">inimigoNaoEstaNoAlcance torre inimigo = not (inimigoEstaNoAlcance torre inimigo)</span></span>
+<span class="lineno">  245 </span>
+<span class="lineno">  246 </span>-- | A função 'detetaInimigos' realiza os ataques de uma torre aos inimigos que estão no seu alcance (quantidade máxima correspondente à sua rajada) caso esta esteja pronta para atacar.
+<span class="lineno">  247 </span>--
+<span class="lineno">  248 </span>-- == Exemplo
+<span class="lineno">  249 </span>--
+<span class="lineno">  250 </span>-- &gt;&gt;&gt; detetaInimigos (Torre (4,4) 5 4 2 5 (-5) (Projetil Fogo Infinita) 1 1) [Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1] 5
+<span class="lineno">  251 </span>-- (Torre (4,4) 5 4 2 5 5 (Projetil Fogo Infinita) 1 1,[Inimigo (5,5) Norte 45 50 50 50 [Projetil Fogo Infinita] [] 50 1,Inimigo (5,5) Norte 45 50 50 50 [Projetil Fogo Infinita] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1])]
+<span class="lineno">  252 </span>
+<span class="lineno">  253 </span>detetaInimigos ::
+<span class="lineno">  254 </span> -- | Torre a atualizar.
+<span class="lineno">  255 </span> Torre -&gt;
+<span class="lineno">  256 </span> -- | Inimigos ativos que se encontram no alcance da torre.
+<span class="lineno">  257 </span> [Inimigo] -&gt; 
+<span class="lineno">  258 </span> -- | Tempo a atualizar.
+<span class="lineno">  259 </span> Tempo -&gt; 
+<span class="lineno">  260 </span> -- | Tempo do dia.
+<span class="lineno">  261 </span> Tempo -&gt;
+<span class="lineno">  262 </span> -- | Tempo do jogo.
+<span class="lineno">  263 </span> Tempo -&gt;
+<span class="lineno">  264 </span> -- | Resultado com a torre e os inimigos atualizados.
+<span class="lineno">  265 </span> (Torre,[Inimigo])
+<span class="lineno">  266 </span><span class="decl"><span class="istickedoff">detetaInimigos torre is t td tj</span>
+<span class="lineno">  267 </span><span class="spaces">    </span><span class="istickedoff">| tempo &lt;= 0 &amp;&amp; not (null is) = (Torre posicao dano alcance rajada ciclo ciclo projetil prob nivel numero,map (atingeInimigo torre td tj) (take rajada is) ++ drop rajada is)</span>
+<span class="lineno">  268 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = (Torre posicao dano alcance rajada ciclo (tempo - t) projetil prob nivel numero,is)</span>
+<span class="lineno">  269 </span><span class="spaces">        </span><span class="istickedoff">where Torre posicao dano alcance rajada ciclo tempo projetil prob nivel numero = torre</span></span>
+<span class="lineno">  270 </span>
+<span class="lineno">  271 </span>-- | A função 'removeInimigosMortos' remove os inimigos mortos do jogo e, como consequência, altera os créditos da base.
+<span class="lineno">  272 </span>--
+<span class="lineno">  273 </span>-- == Exemplo
+<span class="lineno">  274 </span>--
+<span class="lineno">  275 </span>-- &gt;&gt;&gt; removeInimigosMortos [Inimigo (5,5) Norte (-10) 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 0 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1] (Base 50 (4,4) 50) 10 1
+<span class="lineno">  276 </span>-- (Base 100 (4,4) 100,[Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1])]
+<span class="lineno">  277 </span>
+<span class="lineno">  278 </span>removeInimigosMortos ::
+<span class="lineno">  279 </span> -- | Lista de inimigos.
+<span class="lineno">  280 </span> [Inimigo] -&gt;
+<span class="lineno">  281 </span> -- | Base do jogo.
+<span class="lineno">  282 </span> Base -&gt;
+<span class="lineno">  283 </span> -- | Quantidade de inimigos derrotados.
+<span class="lineno">  284 </span> Int -&gt;
+<span class="lineno">  285 </span> -- | Resultado com a base atualizada e os inimigos com vida positiva (vivos).
+<span class="lineno">  286 </span> (Base,[Inimigo],Int)
+<span class="lineno">  287 </span><span class="decl"><span class="istickedoff">removeInimigosMortos [] base q = (base,[],q)</span>
+<span class="lineno">  288 </span><span class="spaces"></span><span class="istickedoff">removeInimigosMortos (i:is) base q</span>
+<span class="lineno">  289 </span><span class="spaces">    </span><span class="istickedoff">| vidaInimigo i &lt;= 0 = removeInimigosMortos is (Base vidaBase posBase (credBase + butimInimigo i)) (q + 1)</span>
+<span class="lineno">  290 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">vidaInimigo i &gt;= 0</span> = let (b',i',q') = removeInimigosMortos is base q in (b',i:i',q')</span>
+<span class="lineno">  291 </span><span class="spaces">        </span><span class="istickedoff">where Base vidaBase posBase credBase = base</span></span>
+<span class="lineno">  292 </span>
+<span class="lineno">  293 </span>-- | A função 'inimigosAtingemBase' remove os inimigos que já alcançaram a base e danifica a mesma como consequência.
+<span class="lineno">  294 </span>--
+<span class="lineno">  295 </span>-- == Exemplo
+<span class="lineno">  296 </span>--
+<span class="lineno">  297 </span>-- &gt;&gt;&gt; [inimigosAtingemBase (Base 200 (4,4) 100) [Inimigo (4.25,4) Norte 50 50 50 50 [] [] 50 1,Inimigo (4.25,4) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1]
+<span class="lineno">  298 </span>-- (Base 100 (4,4) 100,[Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1,Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1])]
+<span class="lineno">  299 </span>
+<span class="lineno">  300 </span>inimigosAtingemBase ::
+<span class="lineno">  301 </span> -- | Base do jogo.
+<span class="lineno">  302 </span> Base -&gt;
+<span class="lineno">  303 </span> -- | Lista de inimigos.
+<span class="lineno">  304 </span> [Inimigo] -&gt;
+<span class="lineno">  305 </span> -- | Resultado com a base atualizada e os inimigos que ainda não atingiram a base.
+<span class="lineno">  306 </span> (Base,[Inimigo])
+<span class="lineno">  307 </span><span class="decl"><span class="istickedoff">inimigosAtingemBase base [] = (base,[])</span>
+<span class="lineno">  308 </span><span class="spaces"></span><span class="istickedoff">inimigosAtingemBase (Base vidaB posB c) (i:is)</span>
+<span class="lineno">  309 </span><span class="spaces">    </span><span class="istickedoff">| dist (posicaoInimigo i) posB &lt;= 0.5 = inimigosAtingemBase (Base (vidaB - ataqueInimigo i) posB c) is</span>
+<span class="lineno">  310 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = let (b',i') = inimigosAtingemBase (Base vidaB posB c) is in (b',i : i')</span></span>
+<span class="lineno">  311 </span>
+<span class="lineno">  312 </span>-- | A função 'atualizaPosicao' atualiza a posição de um inimigo.
+<span class="lineno">  313 </span>--
+<span class="lineno">  314 </span>-- == Exemplos
+<span class="lineno">  315 </span>--
+<span class="lineno">  316 </span>-- &gt;&gt;&gt; atualizaPosicao Norte (4,4) 3 1
+<span class="lineno">  317 </span>-- (4,1)
+<span class="lineno">  318 </span>--
+<span class="lineno">  319 </span>-- &gt;&gt;&gt; atualizaPosicao Sul (4,4) 3 1
+<span class="lineno">  320 </span>-- (4,7)
+<span class="lineno">  321 </span>--
+<span class="lineno">  322 </span>-- &gt;&gt;&gt; atualizaPosicao Este (4,4) 3 1
+<span class="lineno">  323 </span>-- (7,4)
+<span class="lineno">  324 </span>--
+<span class="lineno">  325 </span>-- &gt;&gt;&gt; atualizaPosicao Oeste (4,4) 3 1
+<span class="lineno">  326 </span>-- (1,4)
+<span class="lineno">  327 </span>
+<span class="lineno">  328 </span>atualizaPosicao ::
+<span class="lineno">  329 </span> -- | Direção do inimigo.
+<span class="lineno">  330 </span> Direcao -&gt;
+<span class="lineno">  331 </span> -- | Posição do inimigo.
+<span class="lineno">  332 </span> Posicao -&gt;
+<span class="lineno">  333 </span> -- | Tempo a atualizar.
+<span class="lineno">  334 </span> Tempo -&gt;
+<span class="lineno">  335 </span> -- | Velocidade do inimigo (afetada pelos projéteis).
+<span class="lineno">  336 </span> Float -&gt;
+<span class="lineno">  337 </span> -- | Posição do inimigo atualizada.
+<span class="lineno">  338 </span> Posicao
+<span class="lineno">  339 </span><span class="decl"><span class="istickedoff">atualizaPosicao d (x,y) t v = case d of</span>
+<span class="lineno">  340 </span><span class="spaces">    </span><span class="istickedoff">Norte -&gt; (x,y - v * t)</span>
+<span class="lineno">  341 </span><span class="spaces">    </span><span class="istickedoff">Sul -&gt; (x,y + v * t)</span>
+<span class="lineno">  342 </span><span class="spaces">    </span><span class="istickedoff">Este -&gt; (x + v * t,y)</span>
+<span class="lineno">  343 </span><span class="spaces">    </span><span class="istickedoff">Oeste -&gt; (x - v * t,y)</span></span>
+<span class="lineno">  344 </span>
+<span class="lineno">  345 </span>-- | A função 'divFloat' dá a parte decimal de um número positivo.
+<span class="lineno">  346 </span>--
+<span class="lineno">  347 </span>-- == Exemplo
+<span class="lineno">  348 </span>--
+<span class="lineno">  349 </span>-- &gt;&gt;&gt; divFloat 4.5
+<span class="lineno">  350 </span>-- 0.5
+<span class="lineno">  351 </span>
+<span class="lineno">  352 </span>divFloat ::
+<span class="lineno">  353 </span> -- | Número positivo.
+<span class="lineno">  354 </span> Float -&gt;
+<span class="lineno">  355 </span> -- | Parte decimal do número.
+<span class="lineno">  356 </span> Float
+<span class="lineno">  357 </span><span class="decl"><span class="istickedoff">divFloat x</span>
+<span class="lineno">  358 </span><span class="spaces">    </span><span class="istickedoff">| x &gt;= 1 = divFloat (x - 1)</span>
+<span class="lineno">  359 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">x &lt;= 1</span> = x</span></span>
+<span class="lineno">  360 </span>
+<span class="lineno">  361 </span>-- | A função 'atualizaDirecao' atualiza a direção de um inimigo de forma a que não o permita sair dos caminhos de terra (a direção do inimigo é atualizada apenas quando este se
+<span class="lineno">  362 </span>-- encontra na região central de uma terra, pelo que todos os inimigos devem começar no centro de uma terra).
+<span class="lineno">  363 </span>--
+<span class="lineno">  364 </span>-- == Exemplos
+<span class="lineno">  365 </span>--
+<span class="lineno">  366 </span>-- &gt;&gt;&gt; atualizaDirecao Norte (0.5,0.5) (5,2) [(0.0,0.0),(1.0,0.0),(4.0,0.0),(1.0,1.0),(4.0,1.0),(1.0,2.0),(5.0,2.0),(1.0,3.0),(2.0,3.0),(5.0,3.0),(1.0,4.0),(2.0,4.0),(3.0,4.0),(4.0,4.0),(5.0,4.0),(1.0,5.0)]
+<span class="lineno">  367 </span>-- Este
+<span class="lineno">  368 </span>--
+<span class="lineno">  369 </span>-- &gt;&gt;&gt; atualizaDirecao Este (1.5,0.5) (5,2) [(0.0,0.0),(1.0,0.0),(4.0,0.0),(1.0,1.0),(4.0,1.0),(1.0,2.0),(5.0,2.0),(1.0,3.0),(2.0,3.0),(5.0,3.0),(1.0,4.0),(2.0,4.0),(3.0,4.0),(4.0,4.0),(5.0,4.0),(1.0,5.0)]
+<span class="lineno">  370 </span>-- Sul
+<span class="lineno">  371 </span>--
+<span class="lineno">  372 </span>-- &gt;&gt;&gt; atualizaDirecao Sul (1.5,4.5) (5,2) [(0.0,0.0),(1.0,0.0),(4.0,0.0),(1.0,1.0),(4.0,1.0),(1.0,2.0),(5.0,2.0),(1.0,3.0),(2.0,3.0),(5.0,3.0),(1.0,4.0),(2.0,4.0),(3.0,4.0),(4.0,4.0),(5.0,4.0),(1.0,5.0)]
+<span class="lineno">  373 </span>-- Este
+<span class="lineno">  374 </span>
+<span class="lineno">  375 </span>atualizaDirecao ::
+<span class="lineno">  376 </span> -- | Direção do inimigo.
+<span class="lineno">  377 </span> Direcao -&gt;
+<span class="lineno">  378 </span> -- | Posição do inimigo.
+<span class="lineno">  379 </span> Posicao -&gt;
+<span class="lineno">  380 </span> -- | Posição da base.
+<span class="lineno">  381 </span> Posicao -&gt;
+<span class="lineno">  382 </span> -- | Lista de posições dos caminhos de terra do mapa.
+<span class="lineno">  383 </span> [Posicao] -&gt;
+<span class="lineno">  384 </span> -- | Direção do inimigo atualizada.
+<span class="lineno">  385 </span> Direcao
+<span class="lineno">  386 </span><span class="decl"><span class="istickedoff">atualizaDirecao direcao (x,y) (xb,yb) terras</span>
+<span class="lineno">  387 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">divFloat x &gt; 0.4 &amp;&amp; divFloat x &lt; 0.6 &amp;&amp; divFloat y &gt; 0.4 &amp;&amp; divFloat y &lt; 0.6</span> = case direcao of</span>
+<span class="lineno">  388 </span><span class="spaces">    </span><span class="istickedoff">Norte -&gt; if <span class="tickonlyfalse">(fromInteger (floor x),fromInteger (floor y - 1)) `elem` terras &amp;&amp; <span class="nottickedoff">(fromInteger (floor x),fromInteger (floor y - 1)) `elem` posicoesPosiveis</span></span> then <span class="nottickedoff">Norte</span></span>
+<span class="lineno">  389 </span><span class="spaces">             </span><span class="istickedoff">else if <span class="tickonlyfalse">(fromInteger (floor x - 1),<span class="nottickedoff">fromInteger (floor y)</span>) `elem` terras &amp;&amp; <span class="nottickedoff">(fromInteger (floor x - 1),fromInteger (floor y)) `elem` posicoesPosiveis</span></span> then <span class="nottickedoff">Oeste</span></span>
+<span class="lineno">  390 </span><span class="spaces">             </span><span class="istickedoff">else if <span class="tickonlytrue">(fromInteger (floor x + 1),fromInteger (floor y)) `elem` terras &amp;&amp; (fromInteger (floor x + 1),fromInteger (floor y)) `elem` posicoesPosiveis</span> then Este</span>
+<span class="lineno">  391 </span><span class="spaces">             </span><span class="istickedoff">else <span class="nottickedoff">Sul</span></span>
+<span class="lineno">  392 </span><span class="spaces">    </span><span class="istickedoff">Sul -&gt; if <span class="tickonlyfalse">(fromInteger (floor x),fromInteger (floor y + 1)) `elem` terras &amp;&amp; (fromInteger (floor x),fromInteger (floor y + 1)) `elem` posicoesPosiveis</span> then <span class="nottickedoff">Sul</span></span>
+<span class="lineno">  393 </span><span class="spaces">           </span><span class="istickedoff">else if <span class="tickonlyfalse">(fromInteger (floor x - 1),fromInteger (floor y)) `elem` terras &amp;&amp; <span class="nottickedoff">(fromInteger (floor x - 1),fromInteger (floor y)) `elem` posicoesPosiveis</span></span> then <span class="nottickedoff">Oeste</span></span>
+<span class="lineno">  394 </span><span class="spaces">           </span><span class="istickedoff">else if <span class="tickonlytrue">(fromInteger (floor x + 1),fromInteger (floor y)) `elem` terras &amp;&amp; (fromInteger (floor x + 1),fromInteger (floor y)) `elem` posicoesPosiveis</span> then Este</span>
+<span class="lineno">  395 </span><span class="spaces">           </span><span class="istickedoff">else <span class="nottickedoff">Norte</span></span>
+<span class="lineno">  396 </span><span class="spaces">    </span><span class="istickedoff">Este -&gt; if <span class="tickonlyfalse">(fromInteger (floor x + 1),fromInteger (floor y)) `elem` terras &amp;&amp; <span class="nottickedoff">(fromInteger (floor x + 1),fromInteger (floor y)) `elem` posicoesPosiveis</span></span> then <span class="nottickedoff">Este</span></span>
+<span class="lineno">  397 </span><span class="spaces">            </span><span class="istickedoff">else if <span class="tickonlyfalse">(fromInteger (floor x),fromInteger (floor y - 1)) `elem` terras &amp;&amp; <span class="nottickedoff">(fromInteger (floor x),fromInteger (floor y - 1)) `elem` posicoesPosiveis</span></span> then <span class="nottickedoff">Norte</span></span>
+<span class="lineno">  398 </span><span class="spaces">            </span><span class="istickedoff">else if <span class="tickonlytrue">(fromInteger (floor x),fromInteger (floor y + 1)) `elem` terras &amp;&amp; (fromInteger (floor x),fromInteger (floor y + 1)) `elem` posicoesPosiveis</span> then Sul</span>
+<span class="lineno">  399 </span><span class="spaces">            </span><span class="istickedoff">else <span class="nottickedoff">Oeste</span></span>
+<span class="lineno">  400 </span><span class="spaces">    </span><span class="istickedoff">Oeste -&gt; <span class="nottickedoff">if (fromInteger (floor x - 1),fromInteger (floor y)) `elem` terras &amp;&amp; (fromInteger (floor x - 1),fromInteger (floor y)) `elem` posicoesPosiveis then Oeste</span></span>
+<span class="lineno">  401 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">else if (fromInteger (floor x),fromInteger (floor y - 1)) `elem` terras &amp;&amp; (fromInteger (floor x),fromInteger (floor y - 1)) `elem` posicoesPosiveis then Norte</span></span>
+<span class="lineno">  402 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">else if (fromInteger (floor x),fromInteger (floor y + 1)) `elem` terras &amp;&amp; (fromInteger (floor x),fromInteger (floor y + 1)) `elem` posicoesPosiveis then Sul</span></span>
+<span class="lineno">  403 </span><span class="spaces">             </span><span class="istickedoff"><span class="nottickedoff">else Este</span></span>
+<span class="lineno">  404 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">direcao</span></span>
+<span class="lineno">  405 </span><span class="spaces">        </span><span class="istickedoff">where posicoesPosiveis = posicoesPossiveisParaPortais (filter (\(a,b) -&gt; (a,b) /= (fromIntegral (floor x),fromIntegral (floor y))) terras) (fromIntegral (floor xb),fromIntegral (floor yb))</span></span>
+<span class="lineno">  406 </span>
+<span class="lineno">  407 </span>-- | A função 'atualizaInimigo' atualiza a posição, a vida e a direção de um inimigo com base nas suas circuntâncias (projéteis, posição no mapa, entre outros fatores).
+<span class="lineno">  408 </span>--
+<span class="lineno">  409 </span>-- == Exemplos
+<span class="lineno">  410 </span>--
+<span class="lineno">  411 </span>-- &gt;&gt;&gt; atualizaInimigo 1 0 mapa01 (5,2) False (Inimigo (0.5,0.5) Norte 100 1 10 10 [Projetil Fogo (Finita 3)] [] 100 1)
+<span class="lineno">  412 </span>-- Inimigo (1.5,0.5) Este 90 1 10 10 [Projetil Fogo (Finita 2)] [] 100 1
+<span class="lineno">  413 </span>--
+<span class="lineno">  414 </span>-- &gt;&gt;&gt; atualizaInimigo 1 0 mapa01 (5,2) False (Inimigo (0.5,0.5) Norte 100 1 10 10 [Projetil Gelo (Finita 3)] [] 100 1)
+<span class="lineno">  415 </span>-- Inimigo (0.5,0.5) Norte 100 1 10 10 [Projetil Gelo (Finita 2)] [] 100 1
+<span class="lineno">  416 </span>--
+<span class="lineno">  417 </span>-- &gt;&gt;&gt; atualizaInimigo 1 0 mapa01 (5,2) False (Inimigo (0.5,0.5) Norte 100 1 10 10 [Projetil Resina Infinita] [] 100 1)
+<span class="lineno">  418 </span>-- Inimigo (1.2,0.5) Este 100 1 10 10 [Projetil Resina Infinita] [] 100 1
+<span class="lineno">  419 </span>
+<span class="lineno">  420 </span>atualizaInimigo ::
+<span class="lineno">  421 </span> -- | Tempo a atualizar.
+<span class="lineno">  422 </span> Tempo -&gt;
+<span class="lineno">  423 </span> -- | Tempo do dia.
+<span class="lineno">  424 </span> Tempo -&gt;
+<span class="lineno">  425 </span> -- | Mapa do jogo.
+<span class="lineno">  426 </span> Mapa -&gt;
+<span class="lineno">  427 </span> -- | Posição da base.
+<span class="lineno">  428 </span> Posicao -&gt;
+<span class="lineno">  429 </span> -- | Se está ou não a chover.
+<span class="lineno">  430 </span> Bool -&gt;
+<span class="lineno">  431 </span> -- | Inimigo a atualizar.
+<span class="lineno">  432 </span> Inimigo -&gt;
+<span class="lineno">  433 </span> -- | Inimigo atualizado.
+<span class="lineno">  434 </span> Inimigo
+<span class="lineno">  435 </span><span class="decl"><span class="istickedoff">atualizaInimigo t td m posBase b (Inimigo (x,y) d vida velocidade dano butim projeteis imunidades vidMax num) = case projeteis of</span>
+<span class="lineno">  436 </span><span class="spaces">    </span><span class="istickedoff">[] -&gt; Inimigo (atualizaPosicao (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (<span class="nottickedoff">0</span>,0))) (x,y) t (velocidade * efeitoChuva * efeitoNoite)) (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (<span class="nottickedoff">0</span>,0))) vida velocidade dano butim [] imunidades vidMax num</span>
+<span class="lineno">  437 </span><span class="spaces">        </span><span class="istickedoff">where efeitoChuva = if <span class="tickonlyfalse">b</span> then <span class="nottickedoff">0.85</span> else 1</span>
+<span class="lineno">  438 </span><span class="spaces">              </span><span class="istickedoff">efeitoNoite = if <span class="tickonlyfalse">num == 9 &amp;&amp; <span class="nottickedoff">(td &lt;= 3 || td &gt;= 21)</span></span> then <span class="nottickedoff">1.2</span> else 1</span>
+<span class="lineno">  439 </span><span class="spaces">    </span><span class="istickedoff">[Projetil Fogo duracao] -&gt; Inimigo (atualizaPosicao (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (<span class="nottickedoff">0</span>,0))) (x,y) t (velocidade * efeitoChuva * efeitoNoite)) (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (<span class="nottickedoff">0</span>,0))) (vida - 10 * t) velocidade dano butim (atualizaProjetil t [Projetil Fogo duracao]) imunidades vidMax num</span>
+<span class="lineno">  440 </span><span class="spaces">        </span><span class="istickedoff">where efeitoChuva = if <span class="tickonlyfalse">b</span> then <span class="nottickedoff">0.85</span> else 1</span>
+<span class="lineno">  441 </span><span class="spaces">              </span><span class="istickedoff">efeitoNoite = if <span class="tickonlyfalse">num == 9 &amp;&amp; <span class="nottickedoff">(td &lt;= 3 || td &gt;= 21)</span></span> then <span class="nottickedoff">1.2</span> else 1</span>
+<span class="lineno">  442 </span><span class="spaces">    </span><span class="istickedoff">[Projetil Gelo duracao] -&gt; Inimigo (x,y) d vida velocidade dano butim (atualizaProjetil t [Projetil Gelo duracao]) imunidades vidMax num</span>
+<span class="lineno">  443 </span><span class="spaces">    </span><span class="istickedoff">[Projetil Resina duracao] -&gt; Inimigo (atualizaPosicao (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (<span class="nottickedoff">0</span>,0))) (x,y) t (max 0 (velocidade * 0.7 * efeitoChuva * efeitoNoite))) (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (<span class="nottickedoff">0</span>,0))) vida velocidade dano butim (atualizaProjetil <span class="nottickedoff">t</span> [Projetil Resina duracao]) imunidades vidMax num</span>
+<span class="lineno">  444 </span><span class="spaces">        </span><span class="istickedoff">where efeitoChuva = if <span class="tickonlyfalse">b</span> then <span class="nottickedoff">0.85</span> else 1</span>
+<span class="lineno">  445 </span><span class="spaces">              </span><span class="istickedoff">efeitoNoite = if <span class="tickonlyfalse">num == 9 &amp;&amp; <span class="nottickedoff">(td &lt;= 3 || td &gt;= 21)</span></span> then <span class="nottickedoff">1.2</span> else 1</span>
+<span class="lineno">  446 </span><span class="spaces">    </span><span class="istickedoff">projeteis' -&gt; <span class="nottickedoff">if any verifGelo projeteis' then Inimigo (x,y) d vida velocidade dano butim (atualizaProjetil t projeteis') imunidades vidMax num</span></span>
+<span class="lineno">  447 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">else if any verifResina projeteis' then Inimigo (atualizaPosicao (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (0,0))) (x,y) t (max 0 (velocidade * 0.7 * efeitoChuva * efeitoNoite))) (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (0,0))) vida velocidade dano butim (atualizaProjetil t projeteis') imunidades vidMax num</span></span>
+<span class="lineno">  448 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">else if any verifFogo projeteis' then Inimigo (atualizaPosicao (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (0,0))) (x,y) t (velocidade * efeitoChuva * efeitoNoite)) (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (0,0))) (vida - 10 * t) velocidade dano butim (atualizaProjetil t projeteis') imunidades vidMax num</span></span>
+<span class="lineno">  449 </span><span class="spaces">                      </span><span class="istickedoff"><span class="nottickedoff">else Inimigo (atualizaPosicao (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (0,0))) (x,y) t (velocidade * efeitoChuva * efeitoNoite)) (atualizaDirecao d (x,y) posBase (filtraPosicoesTerra m (0,0))) vida velocidade dano butim (atualizaProjetil t projeteis') imunidades vidMax num</span></span>
+<span class="lineno">  450 </span><span class="spaces">                        </span><span class="istickedoff">where <span class="nottickedoff">efeitoChuva = if b then 0.85 else 1</span></span>
+<span class="lineno">  451 </span><span class="spaces">                              </span><span class="istickedoff"><span class="nottickedoff">efeitoNoite = if num == 9 &amp;&amp; (td &lt;= 3 || td &gt;= 21) then 1.2 else 1</span></span></span>
+<span class="lineno">  452 </span>
+<span class="lineno">  453 </span>-- | A função 'atualizaProjetil' atualiza a duração de um projétil (caso seja duração finita).
+<span class="lineno">  454 </span>--
+<span class="lineno">  455 </span>-- == Exemplos
+<span class="lineno">  456 </span>--
+<span class="lineno">  457 </span>-- &gt;&gt;&gt; atualizaProjetil 1 [Projetil Fogo Infinita,Projetil Gelo (Finita 0.5)]
+<span class="lineno">  458 </span>-- [Projetil Fogo Infinita]
+<span class="lineno">  459 </span>--
+<span class="lineno">  460 </span>-- &gt;&gt;&gt; atualizaProjetil 1 [Projetil Fogo Infinita,Projetil Gelo (Finita 1.5)]
+<span class="lineno">  461 </span>-- [Projetil Fogo Infinita,Projetil Gelo (Finita 0.5)]
+<span class="lineno">  462 </span>
+<span class="lineno">  463 </span>atualizaProjetil ::
+<span class="lineno">  464 </span> -- | Tempo a atualizar.
+<span class="lineno">  465 </span> Tempo -&gt;
+<span class="lineno">  466 </span> -- | Lista de projéteis a atualizar.
+<span class="lineno">  467 </span> [Projetil] -&gt;
+<span class="lineno">  468 </span> -- | Lista de projéteis atualizados.
+<span class="lineno">  469 </span> [Projetil]
+<span class="lineno">  470 </span><span class="decl"><span class="istickedoff">atualizaProjetil _ [] = []</span>
+<span class="lineno">  471 </span><span class="spaces"></span><span class="istickedoff">atualizaProjetil t ((Projetil tipo (Finita x)) : ps)</span>
+<span class="lineno">  472 </span><span class="spaces">    </span><span class="istickedoff">| x - t &lt;= 0 = atualizaProjetil <span class="nottickedoff">t</span> ps</span>
+<span class="lineno">  473 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = Projetil tipo (Finita (x - t)) : atualizaProjetil <span class="nottickedoff">t</span> ps</span>
+<span class="lineno">  474 </span><span class="spaces"></span><span class="istickedoff">atualizaProjetil t ((Projetil tipo Infinita) : ps) = Projetil tipo Infinita : atualizaProjetil t ps</span></span>
+<span class="lineno">  475 </span>
+<span class="lineno">  476 </span>-- | A função 'atualizaPortal' atualiza um portal de modo a que coloque em jogo inimigos das suas ondas quando estiver pronto.
+<span class="lineno">  477 </span>--
+<span class="lineno">  478 </span>-- == Exemplos
+<span class="lineno">  479 </span>--
+<span class="lineno">  480 </span>-- &gt;&gt;&gt; atualizaPortal (Portal (4,4) [Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 (-5) 5]) 1 []
+<span class="lineno">  481 </span>-- (Portal (4,4) [Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 (-6) 4],[])
+<span class="lineno">  482 </span>--
+<span class="lineno">  483 </span>-- &gt;&gt;&gt; atualizaPortal (Portal (4,4) [Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 (-5) (-5)]) 1 []
+<span class="lineno">  484 </span>-- atualizaPortal (Portal (4,4) [Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 (-5) (-5)]) 1 []
+<span class="lineno">  485 </span>
+<span class="lineno">  486 </span>atualizaPortal ::
+<span class="lineno">  487 </span> -- | Portal a atualizar.
+<span class="lineno">  488 </span> Portal -&gt;
+<span class="lineno">  489 </span> -- | Tempo a atualizar.
+<span class="lineno">  490 </span> Tempo -&gt;
+<span class="lineno">  491 </span> -- | Lista de inimigos ativos do jogo.
+<span class="lineno">  492 </span> [Inimigo] -&gt;
+<span class="lineno">  493 </span> -- | Resultado com o portal atualizado e todos os inimigos ativos do jogo.
+<span class="lineno">  494 </span> (Portal,[Inimigo])
+<span class="lineno">  495 </span><span class="decl"><span class="istickedoff">atualizaPortal (Portal pos os) t is</span>
+<span class="lineno">  496 </span><span class="spaces">    </span><span class="istickedoff">| not (existOndaAtiva os) = (Portal pos (map (atualizaTemposOnda t) os),is)</span>
+<span class="lineno">  497 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = let posOA = posicaoOndaAtiva os</span>
+<span class="lineno">  498 </span><span class="spaces">                      </span><span class="istickedoff">(o',is') = atualizaOndaAtiva (os !! posOA) <span class="nottickedoff">t</span> pos</span>
+<span class="lineno">  499 </span><span class="spaces">                      </span><span class="istickedoff">in (Portal pos (o' : map <span class="nottickedoff">(atualizaTemposOnda t)</span> (take posOA <span class="nottickedoff">os</span>) ++ map <span class="nottickedoff">(atualizaTemposOnda t)</span> (drop (posOA + 1) os)),is ++ is')</span></span>
+<span class="lineno">  500 </span>
+<span class="lineno">  501 </span>-- | A função 'mudaPosicaoInimigo' muda a posição de um inimigo.
+<span class="lineno">  502 </span>--
+<span class="lineno">  503 </span>-- == Exemplo
+<span class="lineno">  504 </span>--
+<span class="lineno">  505 </span>-- &gt;&gt;&gt; mudaPosicaoInimigo (Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1) (4,4)
+<span class="lineno">  506 </span>-- Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1
+<span class="lineno">  507 </span>
+<span class="lineno">  508 </span>mudaPosicaoInimigo :: Inimigo -&gt; Posicao -&gt; Inimigo
+<span class="lineno">  509 </span><span class="decl"><span class="istickedoff">mudaPosicaoInimigo (Inimigo _ direcao vida velocidade ataque butim projeteis imunidades vidaMax num) posicao = Inimigo posicao direcao vida velocidade ataque butim projeteis imunidades vidaMax num</span></span>
+<span class="lineno">  510 </span>
+<span class="lineno">  511 </span>-- | A função 'atualizaOndaAtiva' atualiza uma onda ativa, colocando em jogo um inimigo se estiver pronta.
+<span class="lineno">  512 </span>--
+<span class="lineno">  513 </span>-- == Exemplos
+<span class="lineno">  514 </span>--
+<span class="lineno">  515 </span>-- &gt;&gt;&gt; atualizaOndaAtiva (Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 5 (-5)) 1 (4,4)
+<span class="lineno">  516 </span>-- (Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 4 (-5),[])
+<span class="lineno">  517 </span>--
+<span class="lineno">  518 </span>-- &gt;&gt;&gt; atualizaOndaAtiva (Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 (-4) (-5)) 1 (4,4)
+<span class="lineno">  519 </span>-- (Onda [] 5 5 (-5),[Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1])
+<span class="lineno">  520 </span>
+<span class="lineno">  521 </span>atualizaOndaAtiva ::
+<span class="lineno">  522 </span> -- | Onda (ativa) a atualizar.
+<span class="lineno">  523 </span> Onda -&gt;
+<span class="lineno">  524 </span> -- | Tempo a atualizar.
+<span class="lineno">  525 </span> Tempo -&gt; 
+<span class="lineno">  526 </span> -- | Posição do portal.
+<span class="lineno">  527 </span> Posicao -&gt;
+<span class="lineno">  528 </span> -- | Resultado com a onda atualizada e a lista de inimigos resultante.
+<span class="lineno">  529 </span> (Onda,[Inimigo])
+<span class="lineno">  530 </span><span class="decl"><span class="istickedoff">atualizaOndaAtiva (Onda (i:is) ciclo tempo entrada) t (x,y)</span>
+<span class="lineno">  531 </span><span class="spaces">    </span><span class="istickedoff">| tempo &lt;= 0 = (Onda is ciclo ciclo entrada,[mudaPosicaoInimigo i (x,y)])</span>
+<span class="lineno">  532 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">tempo &gt;= 0</span> = (Onda (i:is) ciclo (tempo - t) entrada,[])</span></span>
+<span class="lineno">  533 </span>
+<span class="lineno">  534 </span>-- | A função 'atualizaTemposOnda' atualiza os tempos de uma onda (não ativa).
+<span class="lineno">  535 </span>--
+<span class="lineno">  536 </span>-- == Exemplos
+<span class="lineno">  537 </span>--
+<span class="lineno">  538 </span>-- &gt;&gt;&gt; atualizaTemposOnda 1 (Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 5 100)
+<span class="lineno">  539 </span>-- Onda [Inimigo (1,1) Norte 40 40 40 40 [] [] 1 1] 5 4 99
+<span class="lineno">  540 </span>
+<span class="lineno">  541 </span>atualizaTemposOnda ::
+<span class="lineno">  542 </span> -- | Tempo a atualizar.
+<span class="lineno">  543 </span> Tempo -&gt;
+<span class="lineno">  544 </span> -- | Onda (não ativa) a atualizar.
+<span class="lineno">  545 </span> Onda -&gt;
+<span class="lineno">  546 </span> -- | Onda atualizada.
+<span class="lineno">  547 </span> Onda
+<span class="lineno">  548 </span><span class="decl"><span class="istickedoff">atualizaTemposOnda t o = Onda is ciclo (tempo - t) (entrada - t)</span>
+<span class="lineno">  549 </span><span class="spaces">    </span><span class="istickedoff">where Onda is ciclo tempo entrada = o</span></span>
+<span class="lineno">  550 </span>
+<span class="lineno">  551 </span>-- | A função 'atualizaVidaInimigosLagrimasCristalinas' aumenta a vida dos inimigos (ativos) próximos de lágrimas cristalinas.
+<span class="lineno">  552 </span>--
+<span class="lineno">  553 </span>-- == Exemplos
+<span class="lineno">  554 </span>--
+<span class="lineno">  555 </span>-- &gt;&gt;&gt; atualizaVidaInimigosLagrimasCristalinas [(1,1)] [Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1] 1 (True,30,[])
+<span class="lineno">  556 </span>-- [Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1]
+<span class="lineno">  557 </span>--
+<span class="lineno">  558 </span>-- &gt;&gt;&gt; atualizaVidaInimigosLagrimasCristalinas [(1,1)] [Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1] 1 (False,30,[])
+<span class="lineno">  559 </span>-- [Inimigo (1,1) Norte 45 40 40 40 [] [] 45 1]
+<span class="lineno">  560 </span>--
+<span class="lineno">  561 </span>-- &gt;&gt;&gt; atualizaVidaInimigosLagrimasCristalinas [(5,5)] [Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1] 1 (True,30,[])
+<span class="lineno">  562 </span>-- [Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1]
+<span class="lineno">  563 </span>
+<span class="lineno">  564 </span>atualizaVidaInimigosLagrimasCristalinas ::
+<span class="lineno">  565 </span> -- | Posições das águas cristalinas.
+<span class="lineno">  566 </span> [Posicao] -&gt;
+<span class="lineno">  567 </span> -- | Inimigos ativos do jogo.
+<span class="lineno">  568 </span> [Inimigo] -&gt;
+<span class="lineno">  569 </span> -- | Tempo a atualizar.
+<span class="lineno">  570 </span> Tempo -&gt;
+<span class="lineno">  571 </span> -- | Tempo de jogo.
+<span class="lineno">  572 </span> (Bool,Tempo,[Posicao]) -&gt;
+<span class="lineno">  573 </span> -- | Inimigos eventualmente regenerados.
+<span class="lineno">  574 </span> [Inimigo]
+<span class="lineno">  575 </span><span class="decl"><span class="istickedoff">atualizaVidaInimigosLagrimasCristalinas lcs is t ec</span>
+<span class="lineno">  576 </span><span class="spaces">    </span><span class="istickedoff">| (\(a,_,_) -&gt; a) ec = is</span>
+<span class="lineno">  577 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = map (atualizaVidaInimigoLagrimasCristalinas lcs t) is</span></span>
+<span class="lineno">  578 </span>
+<span class="lineno">  579 </span>-- | A função 'atualizaVidaInimigoLagrimasCristalinas' aumenta a vida de um inimigo caso este esteja próximo de lágrimas cristalinas.
+<span class="lineno">  580 </span>--
+<span class="lineno">  581 </span>-- == Exemplos
+<span class="lineno">  582 </span>--
+<span class="lineno">  583 </span>-- &gt;&gt;&gt; atualizaVidaInimigoLagrimasCristalinas [(1,1)] 1 (Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1)
+<span class="lineno">  584 </span>-- Inimigo (1,1) Norte 45 40 40 40 [] [] 45 1
+<span class="lineno">  585 </span>--
+<span class="lineno">  586 </span>-- &gt;&gt;&gt; atualizaVidaInimigoLagrimasCristalinas [(5,5)] 1 (Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1)
+<span class="lineno">  587 </span>-- Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1
+<span class="lineno">  588 </span>
+<span class="lineno">  589 </span>atualizaVidaInimigoLagrimasCristalinas ::
+<span class="lineno">  590 </span> -- | Posicões das águas cristalinas.
+<span class="lineno">  591 </span> [Posicao] -&gt;
+<span class="lineno">  592 </span> -- | Tempo a atualizar.
+<span class="lineno">  593 </span> Tempo -&gt;
+<span class="lineno">  594 </span> -- | Inimigo selecionado.
+<span class="lineno">  595 </span> Inimigo -&gt;
+<span class="lineno">  596 </span> -- | Inimigo eventualmente regenerado.
+<span class="lineno">  597 </span> Inimigo
+<span class="lineno">  598 </span><span class="decl"><span class="istickedoff">atualizaVidaInimigoLagrimasCristalinas lcs t (Inimigo pos direcao vida velocidade ataque butim projeteis imunidades vidMax num)</span>
+<span class="lineno">  599 </span><span class="spaces">    </span><span class="istickedoff">| null (filter (\(x,y) -&gt; dist (x,y) pos &lt;= 2.5) lcs) = Inimigo pos direcao vida velocidade ataque butim projeteis imunidades vidMax num</span>
+<span class="lineno">  600 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = Inimigo pos direcao (min (vida + 10 * t) vidMax) velocidade ataque butim projeteis imunidades vidMax num</span></span>
+<span class="lineno">  601 </span>
+<span class="lineno">  602 </span>-- | A função 'removeGotas' remove de uma lista de gotas de chuva aquelas que se situam fora do mapa (em relação às ordenadas).
+<span class="lineno">  603 </span>--
+<span class="lineno">  604 </span>-- == Exemplo
+<span class="lineno">  605 </span>--
+<span class="lineno">  606 </span>-- &gt;&gt;&gt; removeGotas [(0,-900),(0,-200)]
+<span class="lineno">  607 </span>-- [(0,-200)]
+<span class="lineno">  608 </span>
+<span class="lineno">  609 </span>removeGotas :: 
+<span class="lineno">  610 </span> -- | Posições das gotas.
+<span class="lineno">  611 </span> [Posicao] -&gt; 
+<span class="lineno">  612 </span> -- | Lista resultante de remover as gotas que já estão demasiado baixas.
+<span class="lineno">  613 </span> [Posicao]
+<span class="lineno">  614 </span><span class="decl"><span class="istickedoff">removeGotas = filter (\(_,y) -&gt; y &gt; -896)</span></span>
+<span class="lineno">  615 </span>
+<span class="lineno">  616 </span>-- | A função 'atualizaPosicoesGotas' atualiza as posições das gotas.
+<span class="lineno">  617 </span>--
+<span class="lineno">  618 </span>-- == Exemplo
+<span class="lineno">  619 </span>--
+<span class="lineno">  620 </span>-- &gt;&gt;&gt; atualizaPosicoesGotas [(100,-300),(200,-400)] 1
+<span class="lineno">  621 </span>-- [(95,-400),(195,-500)]
+<span class="lineno">  622 </span>
+<span class="lineno">  623 </span>atualizaPosicoesGotas :: 
+<span class="lineno">  624 </span> -- | Posições das gotas.
+<span class="lineno">  625 </span> [Posicao] -&gt; 
+<span class="lineno">  626 </span> -- | Tempo a atualizar.
+<span class="lineno">  627 </span> Tempo -&gt;
+<span class="lineno">  628 </span> -- | Posições atualizadas.
+<span class="lineno">  629 </span> [Posicao]
+<span class="lineno">  630 </span><span class="decl"><span class="istickedoff">atualizaPosicoesGotas [] _ = []</span>
+<span class="lineno">  631 </span><span class="spaces"></span><span class="istickedoff">atualizaPosicoesGotas ((x,y):ps) t = (x - 5 * t,y - 100 * t) : atualizaPosicoesGotas ps t</span></span>
+<span class="lineno">  632 </span>
+<span class="lineno">  633 </span>-- | A função 'removeProjetilFogo' remove os projéteis de fogo de um inimigo.
+<span class="lineno">  634 </span>--
+<span class="lineno">  635 </span>-- == Exemplo
+<span class="lineno">  636 </span>--
+<span class="lineno">  637 </span>-- &gt;&gt;&gt; removeProjetilFogo (Inimigo (1,1) Norte 40 40 40 40 [Projetil Fogo Infinita,Projetil Gelo Infinita,Projetil Resina Infinita,Projetil Fraqueza Infinita] [] 45 1)
+<span class="lineno">  638 </span>-- Inimigo (1,1) Norte 40 40 40 40 [Projetil Gelo Infinita,Projetil Resina Infinita,Projetil Fraqueza Infinita] [] 45 1
+<span class="lineno">  639 </span>
+<span class="lineno">  640 </span>removeProjetilFogo :: 
+<span class="lineno">  641 </span> -- | Inimigo de escolha.
+<span class="lineno">  642 </span> Inimigo -&gt; 
+<span class="lineno">  643 </span> -- | Inimigo sem projéteis de fogo.
+<span class="lineno">  644 </span> Inimigo
+<span class="lineno">  645 </span><span class="decl"><span class="istickedoff">removeProjetilFogo (Inimigo pos dir vida velocidade ataque butim ps imunidades vMax n) = Inimigo pos dir vida velocidade ataque butim ps' imunidades vMax n</span>
+<span class="lineno">  646 </span><span class="spaces">    </span><span class="istickedoff">where ps' = filter (\p -&gt; tipoProjetil p /= Fogo) ps</span></span>
+<span class="lineno">  647 </span>
+<span class="lineno">  648 </span>-- | A função 'removeProjetilGelo' remove os projéteis de gelo de um inimigo.
+<span class="lineno">  649 </span>--
+<span class="lineno">  650 </span>-- == Exemplo
+<span class="lineno">  651 </span>--
+<span class="lineno">  652 </span>-- &gt;&gt;&gt; removeProjetilGelo (Inimigo (1,1) Norte 40 40 40 40 [Projetil Fogo Infinita,Projetil Gelo Infinita,Projetil Resina Infinita,Projetil Fraqueza Infinita] [] 45 1)
+<span class="lineno">  653 </span>-- Inimigo (1,1) Norte 40 40 40 40 [Projetil Fogo Infinita,Projetil Resina Infinita,Projetil Fraqueza Infinita] [] 45 1
+<span class="lineno">  654 </span>
+<span class="lineno">  655 </span>removeProjetilGelo :: 
+<span class="lineno">  656 </span> -- | Inimigo de escolha.
+<span class="lineno">  657 </span> Inimigo -&gt; 
+<span class="lineno">  658 </span> -- | Inimigo sem projéteis de fogo.
+<span class="lineno">  659 </span> Inimigo
+<span class="lineno">  660 </span><span class="decl"><span class="istickedoff">removeProjetilGelo (Inimigo pos dir vida velocidade ataque butim ps imunidades vMax n) = Inimigo pos dir vida velocidade ataque butim ps' imunidades vMax n</span>
+<span class="lineno">  661 </span><span class="spaces">    </span><span class="istickedoff">where ps' = filter (\p -&gt; tipoProjetil p /= Gelo) ps</span></span>
+<span class="lineno">  662 </span>
+<span class="lineno">  663 </span>
+<span class="lineno">  664 </span>-- | A função 'adicionaProjetilFogo' adiciona um projétil de fogo a um inimigo.
+<span class="lineno">  665 </span>--
+<span class="lineno">  666 </span>-- == Exemplos
+<span class="lineno">  667 </span>--
+<span class="lineno">  668 </span>-- &gt;&gt;&gt; adicionaProjetilFogo 1 (Inimigo (1,1) Norte 40 40 40 40 [] [] 45 1)
+<span class="lineno">  669 </span>-- Inimigo (1,1) Norte 40 40 40 40 [Projetil Fogo (Finita 1)] [] 45 1
+<span class="lineno">  670 </span>--
+<span class="lineno">  671 </span>-- &gt;&gt;&gt; adicionaProjetilFogo 1 (Inimigo (1,1) Norte 40 40 40 40 [] [Fogo] 45 1)
+<span class="lineno">  672 </span>-- Inimigo (1,1) Norte 40 40 40 40 [] [Fogo] 45 1
+<span class="lineno">  673 </span>
+<span class="lineno">  674 </span>adicionaProjetilFogo :: 
+<span class="lineno">  675 </span> -- | Tempo a atualizar.
+<span class="lineno">  676 </span> Tempo -&gt;
+<span class="lineno">  677 </span> -- | Inimigo de escolha.
+<span class="lineno">  678 </span> Inimigo -&gt; 
+<span class="lineno">  679 </span> -- | Inimigo com projétil do fogo adicionado.
+<span class="lineno">  680 </span> Inimigo
+<span class="lineno">  681 </span><span class="decl"><span class="istickedoff">adicionaProjetilFogo t (Inimigo pos dir vida velocidade ataque butim ps imunidades vMax n) = Inimigo pos dir vida velocidade ataque butim ps' imunidades vMax n</span>
+<span class="lineno">  682 </span><span class="spaces">    </span><span class="istickedoff">where ps' = if Fogo `elem` imunidades then ps else normalizaProjeteis (Projetil Fogo (Finita t) : ps)</span></span>
+<span class="lineno">  683 </span>
+<span class="lineno">  684 </span>-- | A função 'removeProjetilResina' remove os projéteis de resina de um inimigo.
+<span class="lineno">  685 </span>--
+<span class="lineno">  686 </span>-- == Exemplo
+<span class="lineno">  687 </span>--
+<span class="lineno">  688 </span>-- &gt;&gt;&gt; removeProjetilResina (Inimigo (1,1) Norte 40 40 40 40 [Projetil Fogo Infinita,Projetil Gelo Infinita,Projetil Resina Infinita,Projetil Fraqueza Infinita] [] 45 1)
+<span class="lineno">  689 </span>-- Inimigo (1,1) Norte 40 40 40 40 [Projetil Fogo Infinita,Projetil Gelo Infinita,Projetil Fraqueza Infinita] [] 45 1
+<span class="lineno">  690 </span>
+<span class="lineno">  691 </span>removeProjetilResina :: 
+<span class="lineno">  692 </span> -- | Inimigo de escolha.
+<span class="lineno">  693 </span> Inimigo -&gt; 
+<span class="lineno">  694 </span> -- | Inimigo sem projéteis de resina.
+<span class="lineno">  695 </span> Inimigo
+<span class="lineno">  696 </span><span class="decl"><span class="istickedoff">removeProjetilResina (Inimigo pos dir vida velocidade ataque butim ps imunidades vMax n) = Inimigo pos dir vida velocidade ataque butim ps' imunidades vMax n</span>
+<span class="lineno">  697 </span><span class="spaces">    </span><span class="istickedoff">where ps' = filter (\p -&gt; tipoProjetil p /= Resina) ps</span></span>
+<span class="lineno">  698 </span>
+<span class="lineno">  699 </span>
+<span class="lineno">  700 </span>
+<span class="lineno">  701 </span>
+<span class="lineno">  702 </span>
+<span class="lineno">  703 </span>-- {- Funções Principais -} --
+<span class="lineno">  704 </span>
+<span class="lineno">  705 </span>-- | A função 'atualizaTorres' permite que as torres realizem devidamente os seus ataques aos inimigos ativos do jogo.
+<span class="lineno">  706 </span>--
+<span class="lineno">  707 </span>-- == Exemplo
+<span class="lineno">  708 </span>--
+<span class="lineno">  709 </span>-- &gt;&gt;&gt; atualizaTorres [Torre (1,1) 5 1 1 5 0 (Projetil Fogo Infinita) 1 1,Torre (4,4) 5 1 1 5 1 (Projetil Fogo Infinita) 1 1] [Inimigo (1,1) Norte 40 40 40 40 [] [] 40 1,Inimigo (4,4) Norte 40 40 40 40 [] [] 40 1] 1 1
+<span class="lineno">  710 </span>-- ([Torre (1,1) 5 1 1 5 5 (Projetil Fogo Infinita) 1 1,Torre (4,4) 5 1 1 5 0 (Projetil Fogo Infinita) 1 1],[Inimigo (4,4) Norte 40 40 40 40 [] [] 40 1,Inimigo (1,1) Norte 35 40 40 40 [Projetil Fogo Infinita] [] 40 1])
+<span class="lineno">  711 </span>
+<span class="lineno">  712 </span>atualizaTorres ::
+<span class="lineno">  713 </span> -- | Lista de torres do jogo.
+<span class="lineno">  714 </span> [Torre] -&gt;
+<span class="lineno">  715 </span> -- | Lista de inimigos ativos do jogo.
+<span class="lineno">  716 </span> [Inimigo] -&gt;
+<span class="lineno">  717 </span> -- | Tempo a atualizar.
+<span class="lineno">  718 </span> Tempo -&gt;
+<span class="lineno">  719 </span> -- | Tempo do dia.
+<span class="lineno">  720 </span> Tempo -&gt;
+<span class="lineno">  721 </span> -- | Tempo do jogo.
+<span class="lineno">  722 </span> Tempo -&gt;
+<span class="lineno">  723 </span> -- | Resultado com as torres e os inimigos ativos do jogo atualizados.
+<span class="lineno">  724 </span> ([Torre],[Inimigo])
+<span class="lineno">  725 </span><span class="decl"><span class="istickedoff">atualizaTorres [] is _ _ _ = ([],is)</span>
+<span class="lineno">  726 </span><span class="spaces"></span><span class="istickedoff">atualizaTorres (torre:ts) is t td tj = (torreAtualizada : ts',is')</span>
+<span class="lineno">  727 </span><span class="spaces">    </span><span class="istickedoff">where (torreAtualizada,isAtualizados) = detetaInimigos torre (inimigosNoAlcance torre is) t td tj</span>
+<span class="lineno">  728 </span><span class="spaces">          </span><span class="istickedoff">(ts',is') = atualizaTorres ts (isAtualizados ++ filter (inimigoNaoEstaNoAlcance torre) is) t <span class="nottickedoff">td</span> <span class="nottickedoff">tj</span></span></span>
+<span class="lineno">  729 </span>
+<span class="lineno">  730 </span>-- | A função 'atualizaInimigos' atualiza os inimigos do jogo ao remover os mortos e os que já alcançaram a base (assim como as consequências destes acontecimentos) e ao atualizar
+<span class="lineno">  731 </span>-- o movimento dos restantes.
+<span class="lineno">  732 </span>--
+<span class="lineno">  733 </span>-- == Exemplo
+<span class="lineno">  734 </span>--
+<span class="lineno">  735 </span>-- &gt;&gt;&gt; atualizaInimigos [Inimigo (0.5,0.5) Norte 5 1 40 40 [Projetil Fogo Infinita] [] 40 1,Inimigo (0.5,0.5) Norte 40 1 40 40 [] [] 40 1] mapa01 (Base 100 (1,4) 100) 1 0 5 False
+<span class="lineno">  736 </span>-- (Base 100 (1,4) 100,[Inimigo (1.5,0.5) Este (-5) 1 40 40 [Projetil Fogo Infinita] [] 40 1,Inimigo (1.5,0.5) Este 40 1 40 40 [] [] 40 1],5)
+<span class="lineno">  737 </span>
+<span class="lineno">  738 </span>atualizaInimigos ::
+<span class="lineno">  739 </span> -- | Inimigos ativos do jogo.
+<span class="lineno">  740 </span> [Inimigo] -&gt;
+<span class="lineno">  741 </span> -- | Mapa do jogo.
+<span class="lineno">  742 </span> Mapa -&gt;
+<span class="lineno">  743 </span> -- | Base do jogo.
+<span class="lineno">  744 </span> Base -&gt;
+<span class="lineno">  745 </span> -- | Tempo a atualizar.
+<span class="lineno">  746 </span> Tempo -&gt;
+<span class="lineno">  747 </span> -- | Tempo do dia.
+<span class="lineno">  748 </span> Tempo -&gt;
+<span class="lineno">  749 </span> -- | Quantidade de inimigos derrotados.
+<span class="lineno">  750 </span> Int -&gt;
+<span class="lineno">  751 </span> -- | Se a chuva está ou não ativa.
+<span class="lineno">  752 </span> Bool -&gt;
+<span class="lineno">  753 </span> -- | Resultado com a base e os inimigos atualizados.
+<span class="lineno">  754 </span> (Base,[Inimigo],Int)
+<span class="lineno">  755 </span><span class="decl"><span class="istickedoff">atualizaInimigos inimigos mapa base t td q b = (baseAtualizada',map (atualizaInimigo t <span class="nottickedoff">td</span> mapa (posicaoBase base) b) inimigosAtualizados,q')</span>
+<span class="lineno">  756 </span><span class="spaces">    </span><span class="istickedoff">where (baseAtualizada,inimigosVivos,q') = removeInimigosMortos inimigos base q</span>
+<span class="lineno">  757 </span><span class="spaces">          </span><span class="istickedoff">(baseAtualizada',inimigosAtualizados) = inimigosAtingemBase baseAtualizada inimigosVivos</span></span>
+<span class="lineno">  758 </span>
+<span class="lineno">  759 </span>-- | A função 'atualizaPortais' atualiza os portais de modo a que coloquem em jogo inimigos das suas ondas quando estiverem prontos.
+<span class="lineno">  760 </span>--
+<span class="lineno">  761 </span>-- == Exemplo
+<span class="lineno">  762 </span>--
+<span class="lineno">  763 </span>-- &gt;&gt;&gt; atualizaPortais [Portal (4,4) [Onda [Inimigo (0.5,0.5) Norte 5 1 40 40 [Projetil Fogo Infinita] [] 40 1] 5 0 (-5)]] 1 []
+<span class="lineno">  764 </span>-- ([Portal (4,4) [Onda [] 5 5 (-5)]],[Inimigo (4,4) Norte 5 1 40 40 [Projetil Fogo Infinita] [] 40 1])
+<span class="lineno">  765 </span>
+<span class="lineno">  766 </span>atualizaPortais ::
+<span class="lineno">  767 </span> -- | Lista de portais de jogo.
+<span class="lineno">  768 </span> [Portal] -&gt;
+<span class="lineno">  769 </span> -- | Tempo a atualizar.
+<span class="lineno">  770 </span> Tempo -&gt;
+<span class="lineno">  771 </span> -- | Lista de inimigos ativos do jogo.
+<span class="lineno">  772 </span> [Inimigo] -&gt;
+<span class="lineno">  773 </span> -- | Resultado com os portais atualizados e todos os inimigos ativos do jogo.
+<span class="lineno">  774 </span> ([Portal],[Inimigo])
+<span class="lineno">  775 </span><span class="decl"><span class="istickedoff">atualizaPortais [] _ is = ([],is)</span>
+<span class="lineno">  776 </span><span class="spaces"></span><span class="istickedoff">atualizaPortais (p:ps) t is = (p' : ps',is'')</span>
+<span class="lineno">  777 </span><span class="spaces">    </span><span class="istickedoff">where (p',is') = atualizaPortal p <span class="nottickedoff">t</span> is</span>
+<span class="lineno">  778 </span><span class="spaces">          </span><span class="istickedoff">(ps',is'') = atualizaPortais ps <span class="nottickedoff">t</span> is'</span></span>
+<span class="lineno">  779 </span>
+<span class="lineno">  780 </span>-- | A função 'atualizaGotasChuva' atualiza a chuva no jogo.
+<span class="lineno">  781 </span>
+<span class="lineno">  782 </span>atualizaGotasChuva :: 
+<span class="lineno">  783 </span> -- | Estado inicial da chuva.
+<span class="lineno">  784 </span> (Bool,Tempo,[Posicao]) -&gt; 
+<span class="lineno">  785 </span> -- | Tempo de jogo (multiplicado por 60).
+<span class="lineno">  786 </span> Tempo -&gt; 
+<span class="lineno">  787 </span> -- | Tempo a atualizar.
+<span class="lineno">  788 </span> Tempo -&gt;
+<span class="lineno">  789 </span> -- | Estado atualizado da chuva.
+<span class="lineno">  790 </span> (Bool,Tempo,[Posicao])
+<span class="lineno">  791 </span><span class="decl"><span class="nottickedoff">atualizaGotasChuva (False,tc,ps) tj t</span>
+<span class="lineno">  792 </span><span class="spaces">    </span><span class="nottickedoff">| tc &gt; 30 &amp;&amp; mod (head (geraAleatorios (floor tj) 1)) 1800 == 0 = (True,0,ps)</span>
+<span class="lineno">  793 </span><span class="spaces">    </span><span class="nottickedoff">| otherwise = (False,tc + t,atualizaPosicoesGotas ps' t)</span>
+<span class="lineno">  794 </span><span class="spaces">        </span><span class="nottickedoff">where ps' = removeGotas ps</span>
+<span class="lineno">  795 </span><span class="spaces"></span><span class="nottickedoff">atualizaGotasChuva (True,tc,ps) tj t</span>
+<span class="lineno">  796 </span><span class="spaces">    </span><span class="nottickedoff">| tc &gt; 15 = (False,0,atualizaPosicoesGotas ps' t)</span>
+<span class="lineno">  797 </span><span class="spaces">    </span><span class="nottickedoff">| null (filter (\(_,y) -&gt; y &gt; -128) ps) = let [x1,x2,x3,x4,x5,x6,x7,x8] = geraAleatorios (floor tj) 8 in </span>
+<span class="lineno">  798 </span><span class="spaces">        </span><span class="nottickedoff">(True,tc + t,[(fromIntegral (mod x1 1344),0),(fromIntegral (mod x2 1344),0),(fromIntegral (mod x3 1344),0),(fromIntegral (mod x4 1344),0),</span>
+<span class="lineno">  799 </span><span class="spaces">                      </span><span class="nottickedoff">(fromIntegral (mod x5 1344),0),(fromIntegral (mod x6 1344),0),(fromIntegral (mod x7 1344),0),(fromIntegral (mod x8 1344),0)] ++ atualizaPosicoesGotas ps' t)</span>
+<span class="lineno">  800 </span><span class="spaces">    </span><span class="nottickedoff">| otherwise = (True,tc + t,atualizaPosicoesGotas ps' t)</span>
+<span class="lineno">  801 </span><span class="spaces">            </span><span class="nottickedoff">where ps' = removeGotas ps</span></span>
+<span class="lineno">  802 </span>
+<span class="lineno">  803 </span>-- | A função 'atualizaTempoDia' atualiza o tempo do dia do jogo.
+<span class="lineno">  804 </span>
+<span class="lineno">  805 </span>atualizaTempoDia ::
+<span class="lineno">  806 </span> -- | Tempo do dia pré-atualização.
+<span class="lineno">  807 </span> Tempo -&gt;
+<span class="lineno">  808 </span> -- | Tempo a atualizar.
+<span class="lineno">  809 </span> Tempo -&gt;
+<span class="lineno">  810 </span> -- | Tempo do dia atualizado.
+<span class="lineno">  811 </span> Tempo
+<span class="lineno">  812 </span><span class="decl"><span class="nottickedoff">atualizaTempoDia td t</span>
+<span class="lineno">  813 </span><span class="spaces">    </span><span class="nottickedoff">| td &gt;= 24 = 0</span>
+<span class="lineno">  814 </span><span class="spaces">    </span><span class="nottickedoff">| otherwise = td + t / 8</span></span>
+
+</pre>
+</body>
+</html>

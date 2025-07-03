@@ -1,0 +1,4 @@
+Test suite immutable-towers-test: RUNNING...
+Cases: 8  Tried: 0  Errors: 0  Failures: 0Cases: 8  Tried: 1  Errors: 0  Failures: 0Cases: 8  Tried: 2  Errors: 0  Failures: 0Cases: 8  Tried: 3  Errors: 0  Failures: 0Cases: 8  Tried: 4  Errors: 0  Failures: 0Cases: 8  Tried: 5  Errors: 0  Failures: 0Cases: 8  Tried: 6  Errors: 0  Failures: 0Cases: 8  Tried: 7  Errors: 0  Failures: 0                                          Cases: 8  Tried: 8  Errors: 0  Failures: 0
+Test suite immutable-towers-test: PASS
+Test suite logged to: /home/bruno/Desktop/2024li1g051/dist-newstyle/build/x86_64-linux/ghc-9.4.8/immutable-towers-0.0.0.0/t/immutable-towers-test/test/immutable-towers-0.0.0.0-immutable-towers-test.log

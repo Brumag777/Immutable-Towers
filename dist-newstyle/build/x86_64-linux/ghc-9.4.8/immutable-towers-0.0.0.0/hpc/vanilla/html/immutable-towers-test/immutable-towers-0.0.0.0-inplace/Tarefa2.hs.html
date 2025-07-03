@@ -1,0 +1,404 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+span.lineno { color: white; background: #aaaaaa; border-right: solid white 12px }
+span.nottickedoff { background: yellow}
+span.istickedoff { background: white }
+span.tickonlyfalse { margin: -1px; border: 1px solid #f20913; background: #f20913 }
+span.tickonlytrue  { margin: -1px; border: 1px solid #60de51; background: #60de51 }
+span.funcount { font-size: small; color: orange; z-index: 2; position: absolute; right: 20 }
+span.decl { font-weight: bold }
+span.spaces    { background: white }
+</style>
+</head>
+<body>
+<pre>
+<span class="decl"><span class="nottickedoff">never executed</span> <span class="tickonlytrue">always true</span> <span class="tickonlyfalse">always false</span></span>
+</pre>
+<pre>
+<span class="lineno">    1 </span>{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+<span class="lineno">    2 </span>{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+<span class="lineno">    3 </span>{-# HLINT ignore &quot;Use all&quot; #-}
+<span class="lineno">    4 </span>{-# HLINT ignore &quot;Use map once&quot; #-}
+<span class="lineno">    5 </span>{-|
+<span class="lineno">    6 </span>Module      : Tarefa2
+<span class="lineno">    7 </span>Description : Auxiliares do Jogo
+<span class="lineno">    8 </span>Copyright   : Bruno Miguel Silva Magalhães &lt;a110274@alunos.uminho.pt&gt;
+<span class="lineno">    9 </span>              João Luís Dias da Costa Oliveira &lt;a81116@alunos.uminho.pt&gt;
+<span class="lineno">   10 </span>
+<span class="lineno">   11 </span>
+<span class="lineno">   12 </span>Módulo para a realização da Tarefa 2 de LI1 em 2024/25.
+<span class="lineno">   13 </span>-}
+<span class="lineno">   14 </span>
+<span class="lineno">   15 </span>module Tarefa2 where
+<span class="lineno">   16 </span>
+<span class="lineno">   17 </span>import LI12425
+<span class="lineno">   18 </span>import Tarefa1
+<span class="lineno">   19 </span>
+<span class="lineno">   20 </span>
+<span class="lineno">   21 </span>
+<span class="lineno">   22 </span>
+<span class="lineno">   23 </span>
+<span class="lineno">   24 </span>-- {- Funções auxiliares -} --
+<span class="lineno">   25 </span>
+<span class="lineno">   26 </span>-- | A função 'inimigoEstaNoAlcance' verifica se um dado inimigo está no alcance de uma torre.
+<span class="lineno">   27 </span>--
+<span class="lineno">   28 </span>-- == Exemplos
+<span class="lineno">   29 </span>--
+<span class="lineno">   30 </span>-- &gt;&gt;&gt; inimigoEstaNoAlcance (Torre (4,4) 5 4 5 5 5 (Projetil Fogo Infinita) 1 1) (Inimigo (5,4) Norte 50 50 50 50 [] [] 50 1)
+<span class="lineno">   31 </span>-- True
+<span class="lineno">   32 </span>--
+<span class="lineno">   33 </span>-- &gt;&gt;&gt; inimigoEstaNoAlcance (Torre (4,4) 5 4 5 5 5 (Projetil Fogo Infinita) 1 1) (Inimigo (5,5) Norte 50 50 50 50 [] [] 50 1)
+<span class="lineno">   34 </span>-- True
+<span class="lineno">   35 </span>--
+<span class="lineno">   36 </span>-- &gt;&gt;&gt; inimigoEstaNoAlcance (Torre (4,4) 5 4 5 5 5 (Projetil Fogo Infinita) 1 1) (Inimigo (9,4) Norte 50 50 50 50 [] [] 50 1)
+<span class="lineno">   37 </span>-- False
+<span class="lineno">   38 </span>--
+<span class="lineno">   39 </span>-- &gt;&gt;&gt; inimigoEstaNoAlcance (Torre (4,4) 5 4 5 5 5 (Projetil Fogo Infinita) 1 1) (Inimigo (8,8) Norte 50 50 50 50 [] [] 50 1)
+<span class="lineno">   40 </span>-- False
+<span class="lineno">   41 </span>
+<span class="lineno">   42 </span>inimigoEstaNoAlcance ::
+<span class="lineno">   43 </span> -- | Torre de escolha.
+<span class="lineno">   44 </span> Torre -&gt;
+<span class="lineno">   45 </span> -- | Inimigo de escolha.
+<span class="lineno">   46 </span> Inimigo -&gt;
+<span class="lineno">   47 </span> -- | Resultado na forma 'True' caso o inimigo esteja no alcance da torre ou 'False' caso contrário.
+<span class="lineno">   48 </span> Bool
+<span class="lineno">   49 </span><span class="decl"><span class="istickedoff">inimigoEstaNoAlcance torre inimigo = dist (posicaoTorre torre) (posicaoInimigo inimigo) &lt;= alcanceTorre torre</span></span>
+<span class="lineno">   50 </span>
+<span class="lineno">   51 </span>-- | A função 'somaDuracoes' recebe dois projéteis e devolve um projétil cuja duração é a soma das durações dos projéteis iniciais, mantendo o seu tipo.
+<span class="lineno">   52 </span>-- Esta função apenas funciona corretamente se os projéteis são do mesmo tipo.
+<span class="lineno">   53 </span>--
+<span class="lineno">   54 </span>-- == Exemplos
+<span class="lineno">   55 </span>--
+<span class="lineno">   56 </span>-- &gt;&gt;&gt; somaDuracoes (Projetil Fogo (Finita 4)) (Projetil Fogo (Finita 5))
+<span class="lineno">   57 </span>-- Projetil Fogo (Finita 9)
+<span class="lineno">   58 </span>--
+<span class="lineno">   59 </span>-- &gt;&gt;&gt; somaDuracoes (Projetil Gelo Infinita) (Projetil Gelo (Finita 5))
+<span class="lineno">   60 </span>-- Projetil Gelo Infinita
+<span class="lineno">   61 </span>--
+<span class="lineno">   62 </span>-- &gt;&gt;&gt; somaDuracoes (Projetil Resina (Finita 5)) (Projetil Resina Infinita)
+<span class="lineno">   63 </span>-- Projetil Resina Infinita
+<span class="lineno">   64 </span>--
+<span class="lineno">   65 </span>-- &gt;&gt;&gt; somaDuracoes (Projetil Fraqueza Infinita) (Projetil Fraqueza Infinita)
+<span class="lineno">   66 </span>-- Projetil Fraqueza Infinita
+<span class="lineno">   67 </span>
+<span class="lineno">   68 </span>somaDuracoes :: 
+<span class="lineno">   69 </span> -- | Primeiro projétil.
+<span class="lineno">   70 </span> Projetil -&gt;
+<span class="lineno">   71 </span> -- | Segundo projétil (do mesmo tipo que o primeiro).
+<span class="lineno">   72 </span> Projetil -&gt;
+<span class="lineno">   73 </span> -- | Projétil resultante.
+<span class="lineno">   74 </span> Projetil
+<span class="lineno">   75 </span><span class="decl"><span class="istickedoff">somaDuracoes (Projetil t Infinita) _ = Projetil t Infinita</span>
+<span class="lineno">   76 </span><span class="spaces"></span><span class="istickedoff">somaDuracoes _ (Projetil t Infinita) = Projetil t Infinita</span>
+<span class="lineno">   77 </span><span class="spaces"></span><span class="istickedoff">somaDuracoes (Projetil t (Finita d1)) (Projetil _ (Finita d2)) = Projetil t (Finita (d1 + d2))</span></span>
+<span class="lineno">   78 </span>
+<span class="lineno">   79 </span>-- | A função 'verifFraqueza' verifica se um projétil é do tipo Fraqueza.
+<span class="lineno">   80 </span>--
+<span class="lineno">   81 </span>-- == Exemplos
+<span class="lineno">   82 </span>--
+<span class="lineno">   83 </span>-- &gt;&gt;&gt; verifFraqueza (Projetil Fraqueza Infinita)
+<span class="lineno">   84 </span>-- True
+<span class="lineno">   85 </span>--
+<span class="lineno">   86 </span>-- &gt;&gt;&gt; verifFraqueza (Projetil Fraqueza (Finita 3))
+<span class="lineno">   87 </span>-- True
+<span class="lineno">   88 </span>--
+<span class="lineno">   89 </span>-- &gt;&gt;&gt; verifFraqueza (Projetil Fogo Infinita)
+<span class="lineno">   90 </span>-- False
+<span class="lineno">   91 </span>
+<span class="lineno">   92 </span>verifFraqueza ::
+<span class="lineno">   93 </span> -- | Projétil recebido.
+<span class="lineno">   94 </span> Projetil -&gt;
+<span class="lineno">   95 </span> -- | Resultado no tipo 'True' caso o projétil seja de fraqueza ou 'False' caso contrário.
+<span class="lineno">   96 </span> Bool
+<span class="lineno">   97 </span><span class="decl"><span class="istickedoff">verifFraqueza (Projetil Fraqueza _) = True</span>
+<span class="lineno">   98 </span><span class="spaces"></span><span class="istickedoff">verifFraqueza _ = False</span></span>
+<span class="lineno">   99 </span>
+<span class="lineno">  100 </span>-- | A função 'verifNaoFraqueza' verifica se um projétil não é do tipo fraqueza.
+<span class="lineno">  101 </span>--
+<span class="lineno">  102 </span>-- == Exemplos
+<span class="lineno">  103 </span>--
+<span class="lineno">  104 </span>-- &gt;&gt;&gt; verifNaoFraqueza (Projetil Fraqueza Infinita)
+<span class="lineno">  105 </span>-- False
+<span class="lineno">  106 </span>--
+<span class="lineno">  107 </span>-- &gt;&gt;&gt; verifNaoFraqueza (Projetil Fraqueza (Finita 3))
+<span class="lineno">  108 </span>-- False
+<span class="lineno">  109 </span>--
+<span class="lineno">  110 </span>-- &gt;&gt;&gt; verifNaoFraqueza (Projetil Fogo Infinita)
+<span class="lineno">  111 </span>-- True
+<span class="lineno">  112 </span>
+<span class="lineno">  113 </span>verifNaoFraqueza ::
+<span class="lineno">  114 </span> -- | Projétil recebido.
+<span class="lineno">  115 </span> Projetil -&gt;
+<span class="lineno">  116 </span> -- | Resultado no tipo 'False' caso o projétil seja de fraqueza ou 'True' caso contrário.
+<span class="lineno">  117 </span> Bool
+<span class="lineno">  118 </span><span class="decl"><span class="istickedoff">verifNaoFraqueza projs = not (verifFraqueza projs)</span></span>
+<span class="lineno">  119 </span>
+<span class="lineno">  120 </span>-- | A função 'normalizaProjeteis' normaliza os projéteis de uma lista.
+<span class="lineno">  121 </span>--
+<span class="lineno">  122 </span>-- == Exemplos
+<span class="lineno">  123 </span>--
+<span class="lineno">  124 </span>-- &gt;&gt;&gt; normalizaProjeteis [Projetil Fraqueza (Finita 5),Projetil Fraqueza Infinita,Projetil Gelo Infinita,Projetil Fogo Infinita]
+<span class="lineno">  125 </span>-- [Projetil Fraqueza Infinita]
+<span class="lineno">  126 </span>--
+<span class="lineno">  127 </span>-- &gt;&gt;&gt; normalizaProjeteis [Projetil Fraqueza (Finita 5),Projetil Fraqueza (Finita 1),Projetil Resina Infinita,Projetil Fogo (Finita 4)]
+<span class="lineno">  128 </span>-- [Projetil Fraqueza (Finita 6),Projetil Fogo (Finita 8)]
+<span class="lineno">  129 </span>
+<span class="lineno">  130 </span>normalizaProjeteis ::
+<span class="lineno">  131 </span> -- | Lista inicial de projéteis.
+<span class="lineno">  132 </span> [Projetil] -&gt;
+<span class="lineno">  133 </span> -- | Lista de projéteis normalizados.
+<span class="lineno">  134 </span> [Projetil]
+<span class="lineno">  135 </span><span class="decl"><span class="istickedoff">normalizaProjeteis projs</span>
+<span class="lineno">  136 </span><span class="spaces">    </span><span class="istickedoff">| null projeteisFraqueza = normalizaProjeteisNaoFraqueza (filter verifNaoFraqueza projs)</span>
+<span class="lineno">  137 </span><span class="spaces">    </span><span class="istickedoff">| length projeteisFraqueza == 1 = projeteisFraqueza ++ normalizaProjeteisNaoFraqueza (filter verifNaoFraqueza projs)</span>
+<span class="lineno">  138 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = somaDuracoes (head projeteisFraqueza) (last projeteisFraqueza) : normalizaProjeteisNaoFraqueza (filter verifNaoFraqueza projs)</span>
+<span class="lineno">  139 </span><span class="spaces">        </span><span class="istickedoff">where projeteisFraqueza = filter verifFraqueza projs</span></span>
+<span class="lineno">  140 </span>
+<span class="lineno">  141 </span>-- | A função 'normalizaProjeteis' normaliza os projéteis (que não são de fraqueza) de uma lista.
+<span class="lineno">  142 </span>--
+<span class="lineno">  143 </span>-- == Exemplos
+<span class="lineno">  144 </span>--
+<span class="lineno">  145 </span>-- &gt;&gt;&gt; normalizaProjeteisNaoFraqueza [Projetil Gelo Infinita,Projetil Fogo Infinita]
+<span class="lineno">  146 </span>-- []
+<span class="lineno">  147 </span>--
+<span class="lineno">  148 </span>-- &gt;&gt;&gt; normalizaProjeteisNaoFraqueza [Projetil Resina (Finita 1),Projetil Fogo (Finita 3)]
+<span class="lineno">  149 </span>-- [Projetil Fogo (Finita 6)]
+<span class="lineno">  150 </span>
+<span class="lineno">  151 </span>normalizaProjeteisNaoFraqueza :: 
+<span class="lineno">  152 </span> -- | Lista inicial de projéteis (que não são de fraqueza).
+<span class="lineno">  153 </span> [Projetil] -&gt;
+<span class="lineno">  154 </span> -- | Lista de projéteis normalizados.
+<span class="lineno">  155 </span> [Projetil]
+<span class="lineno">  156 </span><span class="decl"><span class="istickedoff">normalizaProjeteisNaoFraqueza [] = []</span>
+<span class="lineno">  157 </span><span class="spaces"></span><span class="istickedoff">normalizaProjeteisNaoFraqueza [projetil] = [projetil]</span>
+<span class="lineno">  158 </span><span class="spaces"></span><span class="istickedoff">normalizaProjeteisNaoFraqueza (proj1 : proj2 : projs)</span>
+<span class="lineno">  159 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlyfalse">tipoProj1 == tipoProj2</span> = <span class="nottickedoff">normalizaProjeteisNaoFraqueza (somaDuracoes proj1 proj2 : projs)</span></span>
+<span class="lineno">  160 </span><span class="spaces">    </span><span class="istickedoff">| (tipoProj1 == Fogo &amp;&amp; tipoProj2 == Gelo) || (tipoProj1 == Gelo &amp;&amp; tipoProj2 == Fogo) = normalizaProjeteisNaoFraqueza projs</span>
+<span class="lineno">  161 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlyfalse">tipoProj1 == Fogo &amp;&amp; <span class="nottickedoff">tipoProj2 == Resina</span></span> = <span class="nottickedoff">normalizaProjeteisNaoFraqueza (somaDuracoes proj1 proj1 : projs)</span></span>
+<span class="lineno">  162 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">tipoProj1 == Resina &amp;&amp; tipoProj2 == Fogo</span> = normalizaProjeteisNaoFraqueza (somaDuracoes proj2 proj2 : projs)</span>
+<span class="lineno">  163 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">proj1 : proj2 : projs</span></span>
+<span class="lineno">  164 </span><span class="spaces">        </span><span class="istickedoff">where tipoProj1 = tipoProjetil proj1</span>
+<span class="lineno">  165 </span><span class="spaces">              </span><span class="istickedoff">tipoProj2 = tipoProjetil proj2</span></span>
+<span class="lineno">  166 </span>
+<span class="lineno">  167 </span>
+<span class="lineno">  168 </span>
+<span class="lineno">  169 </span>-- | A função 'novosProjeteisInimigo' calcula o que acontece à lista de projéteis de um inimigo quando atingido por outro projétil.
+<span class="lineno">  170 </span>--
+<span class="lineno">  171 </span>-- == Exemplos
+<span class="lineno">  172 </span>--
+<span class="lineno">  173 </span>-- &gt;&gt;&gt; novosProjeteisInimigo (Projetil Fogo Infinita) [Projetil Gelo Infinita]
+<span class="lineno">  174 </span>-- []
+<span class="lineno">  175 </span>--
+<span class="lineno">  176 </span>-- &gt;&gt;&gt; novosProjeteisInimigo (Projetil Fraqueza (Finita 4)) [Projetil Resina Infinita,Projetil Fraqueza (Finita 6)]
+<span class="lineno">  177 </span>-- [Projetil Fraqueza (Finita 10),Projetil Resina Infinita]
+<span class="lineno">  178 </span>
+<span class="lineno">  179 </span>novosProjeteisInimigo :: 
+<span class="lineno">  180 </span> -- | Projétil que atinge o inimigo.
+<span class="lineno">  181 </span> Projetil -&gt;
+<span class="lineno">  182 </span> -- | Lista de projéteis do inimigo.
+<span class="lineno">  183 </span> [Projetil] -&gt;
+<span class="lineno">  184 </span> -- | Lista de projéteis resultante.
+<span class="lineno">  185 </span> [Projetil]
+<span class="lineno">  186 </span><span class="decl"><span class="istickedoff">novosProjeteisInimigo proj projs = normalizaProjeteis (proj : projs)</span></span>
+<span class="lineno">  187 </span>
+<span class="lineno">  188 </span>-- | A função 'existOndaAtiva' verifica se exise pelo menos uma onda ativa numa lista de ondas.
+<span class="lineno">  189 </span>--
+<span class="lineno">  190 </span>-- == Exemplos
+<span class="lineno">  191 </span>--
+<span class="lineno">  192 </span>-- &gt;&gt;&gt; existOndaAtiva []
+<span class="lineno">  193 </span>-- False
+<span class="lineno">  194 </span>--
+<span class="lineno">  195 </span>-- &gt;&gt;&gt; existOndaAtiva [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) 5]
+<span class="lineno">  196 </span>-- False
+<span class="lineno">  197 </span>--
+<span class="lineno">  198 </span>-- &gt;&gt;&gt; existOndaAtiva [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) (-5)]
+<span class="lineno">  199 </span>-- True
+<span class="lineno">  200 </span>--
+<span class="lineno">  201 </span>-- &gt;&gt;&gt; existOndaAtiva [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) 5,Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) (-5)]
+<span class="lineno">  202 </span>-- True
+<span class="lineno">  203 </span>--
+<span class="lineno">  204 </span>-- &gt;&gt;&gt; existOndaAtiva [Onda [] 5 (-5) (-5)]
+<span class="lineno">  205 </span>-- False
+<span class="lineno">  206 </span>
+<span class="lineno">  207 </span>existOndaAtiva :: 
+<span class="lineno">  208 </span> -- | Lista de ondas.
+<span class="lineno">  209 </span> [Onda] -&gt;
+<span class="lineno">  210 </span> -- | Resultado na forma 'True' se existe pelo menos uma onda ativa na lista ou 'False' caso contrário.
+<span class="lineno">  211 </span> Bool
+<span class="lineno">  212 </span><span class="decl"><span class="istickedoff">existOndaAtiva [] = False</span>
+<span class="lineno">  213 </span><span class="spaces"></span><span class="istickedoff">existOndaAtiva (o:os)</span>
+<span class="lineno">  214 </span><span class="spaces">    </span><span class="istickedoff">| entradaOnda o &lt;= 0 &amp;&amp; not (null (inimigosOnda o)) = True</span>
+<span class="lineno">  215 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = existOndaAtiva os</span></span>
+<span class="lineno">  216 </span>
+<span class="lineno">  217 </span>-- | A função 'posicaoOndaAtiva' determina a posição da onda ativa (assumindo que esta existe) numa lista de ondas.
+<span class="lineno">  218 </span>--
+<span class="lineno">  219 </span>-- == Exemplos
+<span class="lineno">  220 </span>--
+<span class="lineno">  221 </span>-- &gt;&gt;&gt; posicaoOndaAtiva [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) (-5)]
+<span class="lineno">  222 </span>-- 0
+<span class="lineno">  223 </span>--
+<span class="lineno">  224 </span>-- &gt;&gt;&gt; posicaoOndaAtiva [Onda [] 40 (-5) (-5),Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) (-5)]
+<span class="lineno">  225 </span>-- 1
+<span class="lineno">  226 </span>
+<span class="lineno">  227 </span>posicaoOndaAtiva :: 
+<span class="lineno">  228 </span> -- | Lista de ondas (lista que possui pelo menos uma onda ativa).
+<span class="lineno">  229 </span> [Onda] -&gt; 
+<span class="lineno">  230 </span> -- | Posição da onda ativa na lista.
+<span class="lineno">  231 </span> Int
+<span class="lineno">  232 </span><span class="decl"><span class="istickedoff">posicaoOndaAtiva (o:os)</span>
+<span class="lineno">  233 </span><span class="spaces">    </span><span class="istickedoff">| entradaOnda o &lt;= 0 &amp;&amp; not (null (inimigosOnda o)) = 0</span>
+<span class="lineno">  234 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = 1 + posicaoOndaAtiva os</span></span>
+<span class="lineno">  235 </span>
+<span class="lineno">  236 </span>
+<span class="lineno">  237 </span>
+<span class="lineno">  238 </span>
+<span class="lineno">  239 </span>
+<span class="lineno">  240 </span>-- {- Funções principais -} --
+<span class="lineno">  241 </span>
+<span class="lineno">  242 </span>-- | A função 'inimigosNoAlcance' determina todos os inimigos (ativos) que estão no alcance de uma torre.
+<span class="lineno">  243 </span>--
+<span class="lineno">  244 </span>-- == Exemplos
+<span class="lineno">  245 </span>--
+<span class="lineno">  246 </span>-- &gt;&gt;&gt; inimigosNoAlcance (Torre (5,5) 5 2 5 5 5 (Projetil Fraqueza Infinita) 1 1) [Inimigo (2,3) Norte 40 40 40 40 [] [] 1 1,Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1]
+<span class="lineno">  247 </span>-- [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1]
+<span class="lineno">  248 </span>--
+<span class="lineno">  249 </span>-- &gt;&gt;&gt; inimigosNoAlcance (Torre (5,5) 5 2 5 5 5 (Projetil Fraqueza Infinita) 1 1) []
+<span class="lineno">  250 </span>-- []
+<span class="lineno">  251 </span>
+<span class="lineno">  252 </span>inimigosNoAlcance :: 
+<span class="lineno">  253 </span> -- | Torre de foco.
+<span class="lineno">  254 </span> Torre -&gt;
+<span class="lineno">  255 </span> -- | Lista de inimigos ativos no jogo.
+<span class="lineno">  256 </span> [Inimigo] -&gt;
+<span class="lineno">  257 </span> -- | Lista de inimigos ativos que estão no alcance da torre.
+<span class="lineno">  258 </span> [Inimigo]
+<span class="lineno">  259 </span><span class="decl"><span class="istickedoff">inimigosNoAlcance torre = filter (inimigoEstaNoAlcance torre)</span></span>
+<span class="lineno">  260 </span>
+<span class="lineno">  261 </span>-- | A função 'atingeInimigo' calcula o resultado de um inimigo ser atingido por uma torre.
+<span class="lineno">  262 </span>--
+<span class="lineno">  263 </span>-- == Exemplos
+<span class="lineno">  264 </span>--
+<span class="lineno">  265 </span>-- &gt;&gt;&gt; atingeInimigo (Torre (5,5) 5 2 5 5 5 (Projetil Fogo (Finita 4)) 1 1) (Inimigo (2,3) Norte 40 40 40 40 [Projetil Gelo Infinita] [Fogo] 1 1)
+<span class="lineno">  266 </span>-- Inimigo (2,3) Norte 35 40 40 40 [Projetil Gelo Infinita] [Fogo] 1 1
+<span class="lineno">  267 </span>--
+<span class="lineno">  268 </span>-- &gt;&gt;&gt; atingeInimigo (Torre (5,5) 5 2 5 5 5 (Projetil Fogo (Finita 4)) 1 1) (Inimigo (2,3) Norte 40 40 40 40 [Projetil Gelo Infinita] [] 1 1)
+<span class="lineno">  269 </span>-- Inimigo (2,3) Norte 35 40 40 40 [] [] 1 1
+<span class="lineno">  270 </span>--
+<span class="lineno">  271 </span>-- &gt;&gt;&gt; atingeInimigo (Torre (5,5) 5 2 5 5 5 (Projetil Fogo (Finita 4)) 1 1) (Inimigo (2,3) Norte 40 40 40 40 [Projetil Fraqueza Infinita] [] 1 1)
+<span class="lineno">  272 </span>-- Inimigo (2,3) Norte 30 40 40 40 [Projetil Fraqueza Infinita,Projetil Fogo (Finita 4)] [] 1 1
+<span class="lineno">  273 </span>
+<span class="lineno">  274 </span>atingeInimigo :: 
+<span class="lineno">  275 </span> -- | Torre de foco.
+<span class="lineno">  276 </span> Torre -&gt;
+<span class="lineno">  277 </span> -- | Tempo do dia.
+<span class="lineno">  278 </span> Tempo -&gt;
+<span class="lineno">  279 </span> -- | Tempo do jogo.
+<span class="lineno">  280 </span> Tempo -&gt;
+<span class="lineno">  281 </span> -- | Inimigo atingido.
+<span class="lineno">  282 </span> Inimigo -&gt;
+<span class="lineno">  283 </span> -- | Inimigo resultante.
+<span class="lineno">  284 </span> Inimigo
+<span class="lineno">  285 </span><span class="decl"><span class="istickedoff">atingeInimigo t td tj i</span>
+<span class="lineno">  286 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlyfalse">mod (head (geraAleatorios (floor tj * 60) 1)) 100 &lt; probErrar</span> = <span class="nottickedoff">i</span></span>
+<span class="lineno">  287 </span><span class="spaces">    </span><span class="istickedoff">| any verifFraqueza projInimigo = Inimigo posInimigo dirInimigo (vidInimigo - 2 * danoTorre t * efeitoDiaNoite) velInimigo ataqInimigo butInimigo projeteisAtualizados imunidades vidMaxima num</span>
+<span class="lineno">  288 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = Inimigo posInimigo dirInimigo (vidInimigo - danoTorre t * efeitoDiaNoite) velInimigo ataqInimigo butInimigo projeteisAtualizados imunidades vidMaxima num</span>
+<span class="lineno">  289 </span><span class="spaces">        </span><span class="istickedoff">where (Inimigo posInimigo dirInimigo vidInimigo velInimigo ataqInimigo butInimigo projInimigo imunidades vidMaxima num) = i</span>
+<span class="lineno">  290 </span><span class="spaces">              </span><span class="istickedoff">projeteisAtualizados = if tipoProjetil (projetilTorre t) `elem` imunidades then projInimigo else novosProjeteisInimigo (projetilTorre t) projInimigo</span>
+<span class="lineno">  291 </span><span class="spaces">              </span><span class="istickedoff">efeitoDiaNoite</span>
+<span class="lineno">  292 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlyfalse">td &gt; 3 &amp;&amp; <span class="nottickedoff">td &lt; 21 &amp;&amp; num == 11</span></span> = <span class="nottickedoff">1.2</span></span>
+<span class="lineno">  293 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlyfalse">(td &lt;= 3 || <span class="nottickedoff">td &gt;= 21</span>) &amp;&amp; (num == 3 || num == 8)</span> = <span class="nottickedoff">0.8</span></span>
+<span class="lineno">  294 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = 1</span>
+<span class="lineno">  295 </span><span class="spaces">              </span><span class="istickedoff">probErrar</span>
+<span class="lineno">  296 </span><span class="spaces">                </span><span class="istickedoff">| <span class="tickonlytrue">td &lt;= 3 || <span class="nottickedoff">td &gt;= 21</span></span> = probabilidadaErrar t * 2</span>
+<span class="lineno">  297 </span><span class="spaces">                </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">probabilidadaErrar t</span></span></span>
+<span class="lineno">  298 </span>
+<span class="lineno">  299 </span>-- | A função 'ativaInimigo' calcula o que acontece a um portal quando uma das suas ondas ativa um inimigo.
+<span class="lineno">  300 </span>--
+<span class="lineno">  301 </span>-- == Exemplos
+<span class="lineno">  302 </span>--
+<span class="lineno">  303 </span>-- &gt;&gt;&gt; ativaInimigo (Portal (4,4) [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) (-5)]) []
+<span class="lineno">  304 </span>-- (Portal (4,4) [Onda [] 5 5 (-5)],[Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1])
+<span class="lineno">  305 </span>--
+<span class="lineno">  306 </span>-- &gt;&gt;&gt; ativaInimigo (Portal (4,4) [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) 5,Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) (-5)]) []
+<span class="lineno">  307 </span>-- (Portal (4,4) [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 (-5) 5,Onda [] 5 5 (-5)],[Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1])
+<span class="lineno">  308 </span>
+<span class="lineno">  309 </span>ativaInimigo :: 
+<span class="lineno">  310 </span> -- | Portal de foco.
+<span class="lineno">  311 </span> Portal -&gt;
+<span class="lineno">  312 </span> -- | Lista de inimigos ativos.
+<span class="lineno">  313 </span> [Inimigo] -&gt;
+<span class="lineno">  314 </span> -- | Resultado na forma '(portal resultante,lista de inimigos ativos resultante)'.
+<span class="lineno">  315 </span> (Portal,[Inimigo])
+<span class="lineno">  316 </span><span class="decl"><span class="istickedoff">ativaInimigo portal inimigos</span>
+<span class="lineno">  317 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlyfalse">not (existOndaAtiva ondas)</span> = <span class="nottickedoff">(portal,inimigos)</span></span>
+<span class="lineno">  318 </span><span class="spaces">    </span><span class="istickedoff">| <span class="tickonlytrue">tempOnda &lt;= 0</span> = (Portal posPortal (take x ondas ++ Onda (tail inimOndas) cicOnda cicOnda entOnda : drop (x + 1) ondas),head inimOndas : inimigos)</span>
+<span class="lineno">  319 </span><span class="spaces">    </span><span class="istickedoff">| <span class="nottickedoff">otherwise</span> = <span class="nottickedoff">(portal,inimigos)</span></span>
+<span class="lineno">  320 </span><span class="spaces">        </span><span class="istickedoff">where (Portal posPortal ondas) = portal</span>
+<span class="lineno">  321 </span><span class="spaces">              </span><span class="istickedoff">x = posicaoOndaAtiva ondas</span>
+<span class="lineno">  322 </span><span class="spaces">              </span><span class="istickedoff">(Onda inimOndas cicOnda tempOnda entOnda) = ondas !! x</span></span>
+<span class="lineno">  323 </span>
+<span class="lineno">  324 </span>-- | A função 'terminouJogo' verifica se o jogo terminou, isto é, se o jogador já perdeu ou já ganhou.
+<span class="lineno">  325 </span>--
+<span class="lineno">  326 </span>-- == Exemplos
+<span class="lineno">  327 </span>--
+<span class="lineno">  328 </span>-- &gt;&gt;&gt; terminouJogo (Jogo (Base 50 (4,4) 50) [Portal (4,4) [Onda [] 5 5 5]] [] [] [] [] 1 (1,1) 0 (False,30,[]))
+<span class="lineno">  329 </span>-- True
+<span class="lineno">  330 </span>--
+<span class="lineno">  331 </span>-- &gt;&gt;&gt; terminouJogo (Jogo (Base (-10) (4,4) 50) [] [] [] [] [] 1 (1,1) 0 (False,30,[]))
+<span class="lineno">  332 </span>-- True
+<span class="lineno">  333 </span>--
+<span class="lineno">  334 </span>-- &gt;&gt;&gt; terminouJogo (Jogo (Base 50 (4,4) 50) [Portal (4,4) [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 5 5]] [] [] [] [] 1 (1,1) 0 (False,30,[]))
+<span class="lineno">  335 </span>-- False
+<span class="lineno">  336 </span>
+<span class="lineno">  337 </span>terminouJogo :: 
+<span class="lineno">  338 </span> -- | Jogo atual.
+<span class="lineno">  339 </span> Jogo -&gt;
+<span class="lineno">  340 </span> -- | Resultado na forma 'True' se o jogo já acabou ou 'False' caso contrário.
+<span class="lineno">  341 </span> Bool
+<span class="lineno">  342 </span><span class="decl"><span class="istickedoff">terminouJogo j = ganhouJogo j || perdeuJogo j</span></span>
+<span class="lineno">  343 </span>
+<span class="lineno">  344 </span>-- | A função 'ganhouJogo' verifica se o jogador ganhou o jogo.
+<span class="lineno">  345 </span>--
+<span class="lineno">  346 </span>-- == Exemplos
+<span class="lineno">  347 </span>--
+<span class="lineno">  348 </span>-- &gt;&gt;&gt; ganhouJogo (Jogo (Base 50 (4,4) 50) [Portal (4,4) [Onda [] 5 5 5]] [] [] [] [] 1 (1,1) 0 (False,30,[]))
+<span class="lineno">  349 </span>-- True
+<span class="lineno">  350 </span>--
+<span class="lineno">  351 </span>-- &gt;&gt;&gt; ganhouJogo (Jogo (Base 50 (4,4) 50) [Portal (4,4) [Onda [Inimigo (4,4) Norte 40 40 40 40 [] [] 1 1] 5 5 5]] [] [] [] [] 1 (1,1) 0 (False,30,[]))
+<span class="lineno">  352 </span>-- False
+<span class="lineno">  353 </span>
+<span class="lineno">  354 </span>ganhouJogo :: 
+<span class="lineno">  355 </span> -- | Jogo atual.
+<span class="lineno">  356 </span> Jogo -&gt;
+<span class="lineno">  357 </span> -- | Resultado na forma 'True' se o jogador já tiver ganho ou 'False' caso contrário.
+<span class="lineno">  358 </span> Bool
+<span class="lineno">  359 </span><span class="decl"><span class="istickedoff">ganhouJogo (Jogo _ portais _ _ inimigos _ _ _ _ _ _) = null inimigos &amp;&amp; and (map naoTemInimigos ondas)</span>
+<span class="lineno">  360 </span><span class="spaces">    </span><span class="istickedoff">where ondas = map ondasPortal portais</span>
+<span class="lineno">  361 </span><span class="spaces">          </span><span class="istickedoff">naoTemInimigos [] = True</span>
+<span class="lineno">  362 </span><span class="spaces">          </span><span class="istickedoff">naoTemInimigos (o:os)</span>
+<span class="lineno">  363 </span><span class="spaces">            </span><span class="istickedoff">| null (inimigosOnda o) = naoTemInimigos os</span>
+<span class="lineno">  364 </span><span class="spaces">            </span><span class="istickedoff">| <span class="tickonlytrue">otherwise</span> = False</span></span>
+<span class="lineno">  365 </span>
+<span class="lineno">  366 </span>-- | A função 'perdeuJogo' verifiica se o jogador perdeu o jogo.
+<span class="lineno">  367 </span>--
+<span class="lineno">  368 </span>-- == Exemplos
+<span class="lineno">  369 </span>--
+<span class="lineno">  370 </span>-- &gt;&gt;&gt; perdeuJogo (Jogo (Base 50 (4,4) 50) [] [] [] [] [] 1 (1,1) 0 (False,30,[]))
+<span class="lineno">  371 </span>-- False
+<span class="lineno">  372 </span>--
+<span class="lineno">  373 </span>-- &gt;&gt;&gt; perdeuJogo (Jogo (Base (-10) (4,4) 50) [] [] [] [] [] 1 (1,1) 0 (False,30,[]))
+<span class="lineno">  374 </span>-- True
+<span class="lineno">  375 </span>
+<span class="lineno">  376 </span>perdeuJogo :: 
+<span class="lineno">  377 </span> -- | Jogo atual.
+<span class="lineno">  378 </span> Jogo -&gt;
+<span class="lineno">  379 </span> -- | Resultado na forma 'True' se o jogador já tiver perdido ou 'False' caso contrário.
+<span class="lineno">  380 </span> Bool
+<span class="lineno">  381 </span><span class="decl"><span class="istickedoff">perdeuJogo (Jogo base _ _ _ _ _ _ _ _ _ _) = vidaBase base &lt;= 0</span></span>
+
+</pre>
+</body>
+</html>
