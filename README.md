@@ -37,6 +37,10 @@ Para ver a documentação do projeto, realizada com a biblioteca Haddock, utiliz
 cabal haddock
 ```
 
+### Imagens
+
+![image](https://github.com/user-attachments/assets/6ad61d86-b976-4a29-9035-22c6e6119f73)
+
 # US **English**
 
 ## 🏰 Immutable Towers
