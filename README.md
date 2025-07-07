@@ -106,3 +106,36 @@ To view the project documentation, generated with the Haddock tool, use the foll
 
 ```bash
 cabal haddock
+```
+
+### Images
+
+#### Main menu
+
+![image](https://github.com/user-attachments/assets/f044be18-2988-4cc5-b4e7-f4753eb67247)
+
+#### Themes
+
+![image](https://github.com/user-attachments/assets/f5fca844-052f-4e5a-9b93-645bf289a35c)
+
+#### Achievements
+
+![image](https://github.com/user-attachments/assets/c14cfd2a-45c2-46a4-ab34-9162029b3581)
+
+#### Towers
+
+![image](https://github.com/user-attachments/assets/6963d64e-9788-4b8e-96b7-a0e37887a47a)
+
+#### Enemies
+
+![image](https://github.com/user-attachments/assets/fb315927-4cca-4ae1-a0de-a96cdba0e6e1)
+![image](https://github.com/user-attachments/assets/799fe47f-cdea-422c-ad95-1d20970a540e)
+
+#### Progression system
+
+![image](https://github.com/user-attachments/assets/789cc9e0-0459-4e3d-9dea-bc4ee4528e1f)
+
+#### Game situations
+
+![image](https://github.com/user-attachments/assets/c5a54c64-75e2-4099-8a89-3bbb425aab3d)
+![image](https://github.com/user-attachments/assets/2c44f81c-e7eb-42d6-bc83-9e9341947a01)
