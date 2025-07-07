@@ -39,7 +39,15 @@ cabal haddock
 
 ### Imagens
 
-![image](https://github.com/user-attachments/assets/6ad61d86-b976-4a29-9035-22c6e6119f73)
+#### Menu principal
+
+![image](https://github.com/user-attachments/assets/f044be18-2988-4cc5-b4e7-f4753eb67247)
+
+#### Temas
+
+O jogador pode escolher entre três temas diferentes que são desbloqueados à medida que o jogador progride.
+
+![image](https://github.com/user-attachments/assets/f5fca844-052f-4e5a-9b93-645bf289a35c)
 
 # US **English**
 
