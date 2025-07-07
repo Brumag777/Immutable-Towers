@@ -45,8 +45,6 @@ cabal haddock
 
 #### Temas
 
-O jogador pode escolher entre três temas diferentes que são desbloqueados à medida que o jogador progride.
-
 ![image](https://github.com/user-attachments/assets/f5fca844-052f-4e5a-9b93-645bf289a35c)
 
 #### Conquistas
