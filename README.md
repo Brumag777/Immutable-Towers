@@ -15,7 +15,7 @@ Consiste num jogo de Tower Defense, onde o jogador deve planear e executar estra
 
 ### ▶️ Como jogar
 
-Para correr o jogo, utilize o seguinte comando na terminal:
+Para correr o jogo, utilize o seguinte comando no terminal:
 
 ```bash
 cabal run --verbose=0
@@ -23,7 +23,7 @@ cabal run --verbose=0
 
 ### 🧪 Testes
 
-Para executar os testes do jogo, realizados com a biblioteca **HUnit**, utilize o seguinte comando na terminal:
+Para executar os testes do jogo, realizados com a biblioteca **HUnit**, utilize o seguinte comando no terminal:
 
 ```bash
 cabal test --enable-coverage
@@ -31,7 +31,7 @@ cabal test --enable-coverage
 
 ### 📚 Documentação
 
-Para ver a documentação do projeto, realizada com a biblioteca Haddock, utilize o seguinte comando na terminal:
+Para ver a documentação do projeto, realizada com a biblioteca Haddock, utilize o seguinte comando no terminal:
 
 ```bash
 cabal haddock
